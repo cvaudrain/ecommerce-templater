@@ -1,7 +1,10 @@
+body{
+  font-family: 'PT Sans Narrow', sans-serif;
+}
 form {
   position: relative;
   width: 55vw;
-  height:50vh;
+  /* height:50vh; */
   margin: auto auto 20px auto;
   background: #fff;
   margin-top: 8vh;
@@ -26,6 +29,7 @@ form input {
   resize: none;
   border-bottom:1px solid rgb(184, 182, 182);
   margin:5px;
+  text-align:center;
 }
 form button {
   position: relative;
@@ -69,15 +73,35 @@ footer{
  font-size:1rem;
  padding:30px;
  padding-bottom:20px;
+ line-height:0.8rem;
  /* box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.8); */
 }
 
 /*  */
 /* PROJECT-SPECIFIC */
 /*  */
-/* #job-form{
-height:90vh;
-} */
+.snowflake-br{
+  background: url("images/snowflake-br.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.br-logo{
+  background: url("images/br-desktop-1.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+@media(max-width:500px){
+  .br-logo{
+    background: url("images/br-mobile.png");
+  }
+}
+/* Fonts: */
+.outfit-font{
+  font-family: 'Outfit', sans-serif;
+}
+.pt-sans-font{
+  font-family: 'PT Sans Narrow', sans-serif;
+}
 
 .demo-text{
 line-height: 1.1rem;
@@ -95,19 +119,19 @@ text-shadow: 0 0 1px black;
 
 }
 
-
-
-
+/* Images */
+.logo-format-round{
+  /* width:25vw;
+  height:25vw; */
+  max-width:130px;
+  max-height:130px;
+  border-radius: 50%;
+ /* margin:20px; */
+}
 /* Font */
 
-.logo-format{
-  max-width:225px;
-  height:200px;
-  border-radius: 20%;
- 
-}
 .header-text{
-  font-size:2.5rem;
+  font-size:2.7rem;
  padding-bottom: 10px;;
   
 }
@@ -120,12 +144,22 @@ font-size:1.5rem;
 .glowtext{
 text-shadow:0 1px 1px white;
 }
+.text-shadow{
+  text-shadow: 0 1px 1px black;
+}
 
 .italic{
 font-style:italic;
 }
+.bold{
+  font-weight:bold;
+}
 /* COLORS */
+
 /* Colors. Backgrounds */
+.br-transparent{
+  background:#ffffff00
+}
 .br-gray{
   background:#353738
 }
@@ -282,16 +316,16 @@ background:#4b5566fa;
 /*  */
 /* Button Libr */
 .inset{
-  margin:15px; 
+  /* margin:15px; 
   padding:4px;
   border: none;
   border-radius: 50%;
   width: 50px;
-  height: 50px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
+  height: 50px; */
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); */
+  /* cursor: pointer; */
   color: #fff;
-  border:none;
+  /* border:none; */
   /* box-shadow: 1px 3px 9px black; */
   text-shadow: 0 1px 1px black;
   box-shadow: inset 0 0 7px black;
