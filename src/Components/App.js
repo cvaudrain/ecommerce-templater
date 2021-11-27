@@ -27,7 +27,9 @@ import Donate from "./Donate"
 import DonateSuccess from './DonateSuccess';
 // Admin App only
 import AdminApp from "./AdminApp"
-
+import AdminEditor from "./AdminEditor"
+import AdminViewApps from "./AdminViewApps"
+import AdminApproval from "./AdminApproval"
 function App() {
   const [donateState,setDonateState] = useState({
     orgName:"QVRR Season of Giving",
@@ -62,6 +64,9 @@ setDonateState(raisedState)
 />}/>
 {/* Admin App */}
 <Route path = "/admin" element={<AdminApp/>} />
+<Route path= "/admin-editor" element={<AdminEditor/>} />
+<Route path= "/admin-view-apps" element={<AdminViewApps/>} />
+<Route path= "/admin-approval" element={<AdminApproval/>} />
 
 
       </Routes>

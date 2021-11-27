@@ -8,12 +8,9 @@ function Header(props) {
            <img className="logo-format-round padding-sm inset" src={props.logo}></img>
           {/* <div className="col-xl-2 col-lg-2 col-sm-12 col-xs-12">  </div> */}
            <p className="header-text outfit-font white padding text-shadow bold">{props.orgName}</p>
-        <div class="">
+           <p className="md-text white padding-sm text-shadow bold">{props.subheading}</p>
+        {!props.adminView &&  <div class="">
         <nav class="navbar navbar-expand-lg br-transparent ">
-  {/* <a class="navbar-brand white" href="#"><i class="fas fa-bars"></i></a>
-  <button class="navbar-toggler white" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon white"></span>
-  </button> */}
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -29,6 +26,7 @@ function Header(props) {
   </div>
 </nav>
         </div>
+        }
       </div>
    
         {/* <div className="centered ">

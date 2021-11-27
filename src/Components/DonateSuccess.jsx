@@ -8,6 +8,7 @@ export default function DonateSuccess(props){
         <Header
          orgName={inheritedTemplate.orgName || "Loading"}
          logo={inheritedTemplate.logo || "Loading"}
+         subheading={props.subheading}
         />
         <div className=" pad-b-sm">
         <div className="content-card peach-gradient theGoodShading">

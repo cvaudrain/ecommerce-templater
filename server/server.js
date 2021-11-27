@@ -1,12 +1,12 @@
 require("dotenv").config()
 const express = require("express")
-// const mongoose = require("mongoose")
+const mongoose = require("mongoose")
 const app = express()
 const cors = require("cors")
 const path = require("path") //utility for formatting url path delivery
 const PORT     = process.env.PORT || 4747;
-// const DB       = "stripeDB";
-// const productList =  require("./products.js")
+const DB       = "qvrrDB";
+
 const e = require("express")
 app.use(cors())
 //Stripe 
@@ -32,6 +32,35 @@ app.get("/",(req,res)=>{
     res.sendFile(path.join(__dirname,".././client/public","index.html"))
 })
 
+// MongoDB / Mongoose
+// import schemas.js
+const schemas = require("./schemas") 
+// console.log(schemas.DonateTemplate)
+//Establish DB Connection
+
+//FOR BUILD//
+
+// mongoose.connect(process.env.DB_CONNECTION,{ //don't add +DB on the end
+//     useUnifiedTopology: true,
+//    useNewUrlParser: true,
+// //    useCreateIndex: true, deprecated
+// //    useFindAndModify: false, deprecated
+//    connectTimeoutMS: 10000
+// })
+
+// FOR LOCAL ONLY testing connection to Mongo//
+mongoose.connect("mongodb://localhost:27017/"+DB,{
+   useUnifiedTopology: true,
+   useNewUrlParser: true,
+   connectTimeoutMS: 10000
+   //    useCreateIndex: true, deprecated
+//    useFindAndModify: false, deprecated
+});
+//Connect to DB or Handle Err
+mongoose.connection.on("error",(error)=>console.log(error))
+mongoose.connection.once("open",()=>console.log(`Connected to database: ${DB}`))
+
+
 // Stripe Session Init
 app.post("/api/stripesession", async (req,res)=>{
        console.log("GET Req")
@@ -42,17 +71,7 @@ app.post("/api/stripesession", async (req,res)=>{
         let itemPrice = req.body.price
         let itemPriceCents = itemPrice * 100
         console.log("Received GET req from client api")
-        
             try{
-                
-               //await productArr //does not evaluate next lines of function until selection returns resolved value of product doc from mongoose query
-            //   const matchedProd = productArr.filter((n,i)=>{ 
-            //     if(n.id === selectedProd){
-            //         return n
-            //     }
-            //    })
-            //   console.log("MATCH PROD")
-            //   console.log(matchedProd)
                 const checkoutSession = await stripe.checkout.sessions.create({
                     payment_method_types:["card"],
                     mode:"payment",
@@ -83,3 +102,116 @@ app.post("/api/stripesession", async (req,res)=>{
             }  
               
     })
+    const DonateTemplateSchema = schemas.DonateTemplate
+    // const DonateTemplateSchema = new mongoose.Schema(
+    //     {
+    //         templateName:String,
+    //         currentTemplate:Boolean,
+    //         orgName:String,
+    //         logo:Buffer,
+    //         headerText:String,
+    //         headlineText:String,
+    //         footerText:String,
+    //         footerSubtext:String,
+    //         card1Price:Number,
+    //         card2Price:Number,
+    //         card3Price:Number,
+    //         card4Price:Number,
+    //         card1Title:String,
+    //         card2Title:String,
+    //         card3Title:String,
+    //         card4Title:String,
+    //         card1Text:String,
+    //         card2Text:String,
+    //         card3Text:String,
+    //         card4Text:String
+    //         
+    // }
+    // )
+
+    //Setting a template from Admin
+    app.post("/api/editDonateTemplate",(req,res)=>{
+        console.log(req.body)
+        const updatedTemplate = req.body
+        res.json("Recieved at server. Thanks.")
+    })
+    //DonateTemplate.findOneAndUpdate (err,item)=>  set item.isurrentTemplate to TRUE, set Previous treu to FALSE
+
+    // Define MODEL before use as constructor function
+    const DonateTemplate = mongoose.connection.model("DonateTemplate",DonateTemplateSchema)
+
+    app.get("/api/loadDonateTemplate",(req,res)=>{
+        console.log("ping")
+          DonateTemplate.findOne({currentTemplate:true},(err,doc)=>{
+              if(err){
+                  console.log(err)
+                  res.json("error")
+              } else if
+                (!doc){ res.json("not found")
+              } else{
+                  res.json(doc)
+              }
+          })
+           
+           
+          
+            // res.json(result)
+       
+      
+
+        // DonateTemplate.find({currentTemplate:true},(err,item)=>{
+        //     if(err){
+        //         console.log(err)
+        //         res.status(500)
+              
+        //     } else if(!item){
+        //         console.log("item not found")
+        //        res.json("item not found")
+        //     } else{
+        //         console.log("Matched: responding to client with found model")
+        //         console.log(item)
+        //         res.json(item)
+                
+        //     }
+        // })
+
+    })
+
+    // function fillDB(){
+    //     // let DonateTemplate = schemas.DonateTemplate()
+    //     let template = (
+    //         {
+    //             templateName:"season of giving",
+    //             currentTemplate:true,
+    //             orgName:"QVRR Season of Giving",
+    //             logo:"images/logo.png",
+    //             headerText:"",
+    //             headlineText:"",
+    //             footerText:"QVRR",
+    //             footerSubtext:"Rotary Club Affiliate",
+    //             card1Price:5,
+    //             card2Price:10,
+    //             card3Price:20,
+    //             card4Price:50,
+    //             card1Title:"$5 Donation",
+    //             card2Title:"$10 Donation",
+    //             card3Title:"$20 Donation",
+    //             card4Title:"$50 Donation",
+    //             card1Text:"A donation for $5",
+    //             card2Text:"A donation for $10",
+    //             card3Text:"A donation for $20",
+    //             card4Text:"A donation for $50"
+    //             
+            
+    //     })
+    //     DonateTemplate.create(template,(err,item)=>{
+    //         if(err){
+    //             console.log(err)
+    //         } else{
+    //             console.log("saved template data")
+    //             console.log(item)
+    //         }
+    //     })
+
+    // }
+    // fillDB()

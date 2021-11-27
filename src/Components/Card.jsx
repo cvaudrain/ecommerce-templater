@@ -23,7 +23,7 @@ const navigate = useNavigate()
 
     return (
         // contains column classes to insert accordingly into container/row
-        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+        <div style={props.style} className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
       <div className="content-card theGoodShading cloud-gradient">
     
           <div className="centered ">
@@ -32,6 +32,7 @@ const navigate = useNavigate()
           <div className="cloud-gradient">
           <div className="magenta-gradient">
           <p className="header-text glowtext">{props.title}</p>
+          <p className="header-text glowtext">{props.price}</p>
           </div>
              
               <p className="md-text black">{props.description}</p>
