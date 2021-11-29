@@ -13,43 +13,10 @@ const user = {
   id:1,
   email:"cvaudrain@gmail.com"
 }
-let temp = {
-    Logo: "image.png",
-card1Rendered: true,
-card1Text: "Small donation",
-card1Title: "Bronze",
-card2Rendered: true,
-card2Text: "med Donation",
-card2Title: "SIlver",
-card2price: "5",
-card3Rendered: true,
-card3Text: "Large Dono",
-card3Title: "Gold",
-card3price: "20",
-card4Rendered: true,
-card4Text: "Special Donation",
-card4Title: "Platinum",
-card4price: "50",
-footerSubtext: "Subtext: A good cause",
-footerText: "Footer For Fundraiser",
-headerText: "A good Fundraiser",
-orgName: "Fundraiser",
-isRendered:{
-card1:"",
-card2:"",
-card3:"",
-card4:"",
-card5:"",
-card6:"",
-card7:"",
-card8:""
-},
-howMany:""
-}
-
 
 const [donateTemplate, setDonateTemplate] = useState({
     howMany:0,
+    currentTemplate:true,
     card1Price:null,
         card2Price:0,
         card3Price:0,
@@ -77,23 +44,34 @@ const [donateTemplate, setDonateTemplate] = useState({
         card5Text:"",
         card6Text:"",
         card7Text:"",
-        card8Text:""
+        card8Text:"",
+        headerColor:"",
+        footerColor:"",
+        cardColor:"",
+        cardButtonColor:"",
+        backgroundImage:"", //needs format of contentType:req.file.mimetype, image:data:"", contentType:"image"
+        logo:""
 
-})
+})  
+//Statefuls
 const [cardNum,setCardNum] = useState(4)
 const [joinTemplate, setJoinTemplate] = useState({})
 const [preview,setPreview] = useState(false)
-
-function showPreview(e){
-    e.preventDefault()
-    if(donateTemplate.card1Price == null || donateTemplate.orgName == "" || donateTemplate.footerText == "") {
-        console.log("Please complete header/footer and at least 1 card")
-        return
-    } //no showPreview unless at least 1 card is completed
-    setPreview(true)
+const navObj = {
+    admin:{
+nav1:"/admin",
+nav1Text:"Admin-Home",
+        nav2:"/",
+        nav2Text:"Homepage"
+    },
+    public: {
+      nav1:"/join",
+      nav1Text:"Join",
+        nav2:"",
+        nav2Text:""
+    }
 }
 let howManyArray = []
-
 // This for loop will set an array to whatever length equals the number of howMany selected,
 //thereby allowing us to use an expression of map() function to render correct amount, since we cannot use 
 //a for loop inside JSX
@@ -104,9 +82,47 @@ for(var i=0;i<donateTemplate.howMany;i++){
         price:""
     })
 }
+const [messageUi, setMessageUi] = useState({
+    confirm:"Do you want to finalize these edits?",
+    alert:"Warning: Once you submit, changes will take effect on the live site. "
+})
+const [selectedColor,setSelectedColor] = useState({
+    headerColor:donateTemplate.headerColor,
+    footerColor:donateTemplate.footerColor,
+    cardColor:donateTemplate.cardColor,
+    cardButtonColor:donateTemplate.cardButtonColor
+})
+// UseEffect GET Req to load current template (i.e avoid starting with blank form) ONCE per page load/refresh
+useEffect(()=>{
+    console.log("loading current template, populating form...")
+axios.get("/api/loadDonateTemplate")
+.then((res)=>{
+    console.log(res.data)
+        setDonateTemplate(res.data)
+})
+.catch((err)=>console.log(err))
+},[])
+useEffect(()=>{
+    console.log("donateTemplate Changed")
+    setSelectedColor({
+        headerColor:donateTemplate.headerColor,
+        footerColor:donateTemplate.footerColor,
+        cardColor:donateTemplate.cardColor,
+    cardButtonColor:donateTemplate.cardButtonColor
+    })
+},[donateTemplate])
+
+// Functions, UI Events, Handlers
 function handleForm(ev){
+    console.log(ev)
     let name = ev.target.id
     let value = ev.target.value
+    // console.log(ev.target.props.value)
+    if(name=="headerColor" || name=="footerColor" || name=="cardColor" || name=="cardButtonColor") {value=ev.target.innerText +"-gradient"} //bc value is not valid for p elements, must instead target innerText attribute, + "-gradient" to equal className
+    console.log(`Target = ${ev.target.id}`)
+  
+    console.log(name)
+    console.log(value)
     setDonateTemplate(prev=>{
         return {
             ...prev,
@@ -115,30 +131,86 @@ function handleForm(ev){
     })
 console.log(donateTemplate)
 }
+function handleFormImage(ev){
+    ev.preventDefault()
+    console.log(ev.target.file)
+    axios.post("/api/uploadimage",)
+}
+// Render Preview
+function showPreview(e){
+    e.preventDefault()
+    if(donateTemplate.card1Price == null || donateTemplate.orgName == "" || donateTemplate.footerText == "") {
+        console.log("Please complete header/footer and at least 1 card")
+        return
+    } //no showPreview unless at least 1 card is completed
+    setPreview(true)
+}
+// Submit via api to update DB
 function submitEdits(ev){
     ev.preventDefault()
     console.log(donateTemplate)
     axios.post("/api/editDonateTemplate",donateTemplate)
-    .then((res)=>console.log(res.data))
+    // axios({
+    //     method:"post",
+    //     url:"/api/editDonateTemplate",
+    //     data: donateTemplate,
+    //     headers:{
+    //         "content-type":"multipart/form-data"
+    //     }
+    // })
+    .then((res)=>{
+    console.log(res.data.message)
+    console.log(res.data.newTemplate)
+    setMessageUi({
+        confirm:"",
+        alert:"Success! Your template is live, and you can return here any time to make edits"
+    })
+})
+.catch((err)=>{
+    console.log(err)
+    setMessageUi(prev=>{
+        return {
+            ...prev,
+            alert: "Hm, something went wrong. Let's try again. If the problem persists, check your network connection and contact support."
+        }
+    })
+}) //if server responds with res.sattus and not a res.json object
 }
+
+// function sendLogo(ev){
+//     ev.preventDefault()
+//     // console.log(ev)
+//     let image = new FormData()
+//     image.append()
+// }
 return(
-    <div className="cloud-gradient">
+    <div className="br-logo-gray">
 <Header
 logo={"images/logo.png"}
-orgName={"Edit Fundraiser Page Content"} 
-subheading={`Hello, ${user.name}.`}
+orgName={"Edit Public Page Content"} 
+subheading={donateTemplate.subheading}
 adminView={true}
+nav1Text={navObj.admin.nav1Text}
+nav1={navObj.admin.nav1}
+nav2Text={navObj.admin.nav2Text}
+nav2={navObj.admin.nav2}
+headerColor={"indigo-gradient"}
 />
+{/* Form (to input edits to template object / stateful object donateTemplate) */}
 <div className="md-text pad-sm outfit-font centered ">
-  <form className="templating-form theGoodShading">
+<form className="br-white black theGoodShading" action="/api/uploadimage" method="POST" enctype="multipart/form-data">
+<input className="black-border-sm theGoodShading" id="logo" type="file" accepts="image/*" placeholder="Logo" />
+<button >send</button>
+</form>
+  <form className="br-white black theGoodShading" >
   {/* Header Content */}
   <div className="container">
 <div classname="centered">
-<p className="header-text white">Fundraiser Page Content</p>
-<input onChange={handleForm} id="orgName" type="text" placeholder="Page Header" />
-    <input onChange={handleForm} id="headerText" type="text" placeholder="Subheading" />
-    <input onChange={handleForm} id="Logo" type="" placeholder="Logo" />
-    <input onChange={handleForm} id="howMany" name="howMany" type="number" placeholder="Number of donation cards?"/>
+<p className="header-text black"> Page Content</p>
+<input className="black-border-sm theGoodShading" onChange={handleForm} id="orgName" type="text" placeholder="Page Header" value={donateTemplate.orgName} />
+    <input className="black-border-sm theGoodShading" onChange={handleForm} id="headerText" type="text" placeholder="Subheading" value={donateTemplate.headerText} />
+    <input className="black-border-sm theGoodShading" onChange={handleFormImage} id="logo" type="file" accepts="image/*" placeholder="Logo" value={donateTemplate.logo} />
+    <input className="black-border-sm theGoodShading" onChange={handleForm} id="howMany" name="howMany" type="number" min="0" max="8" placeholder="Number of donation cards?" value={donateTemplate.howMany}/>
     {/* <label for="howManyArray">How many cards should appear?</label> */}
 </div>
 
@@ -147,24 +219,197 @@ adminView={true}
 return <AdminCardForm
 cardNum = {i+1}
 handleForm={handleForm}
-
+initTitleValue={eval(`donateTemplate.card${i+1}Title`)}
+initTextValue={eval(`donateTemplate.card${i+1}Text`)}
+initPriceValue={eval(`donateTemplate.card${i+1}Price`)}
 />
 
 })
 }
-
+<hr/>
 {/* Footer Content */}
-<div className="top-space-sm template-section"></div>
+<div className="top-space-sm template-section">
+</div>
+<hr/>
 <div classname="centered">
-    <input onChange={handleForm} name="footerText" id="footerText" type="" placeholder="main footer text" />
-    <input onChange={handleForm} name="" id="footerSubtext" type="" placeholder="footer subtext" />
-    <input onChange={handleForm} type="color" id="headerColor" name="headerColor"  />
-    <label for="headerColor">Header Color</label>
-    <input onChange={handleForm} type="color" id="footerColor" name="headerColor" />
-    <label for="headerColor">Footer Color</label>
+    <input className="black-border-sm theGoodShading" onChange={handleForm} name="footerText" id="footerText" type="" placeholder="main footer text" value={donateTemplate.footerText} />
+    <input className="black-border-sm theGoodShading" onChange={handleForm} name="" id="footerSubtext" type="" placeholder="footer subtext" value={donateTemplate.footerSubtext} />
+    
+</div>
+<div className="top-space-sm template-section container pad-b-sm soft-corners">
+<hr/><hr/>
+<div className="centered">
+<p className="md-text italic bold">Visuals & Theme</p>
+
+
+
+<p className="italic">Background Image</p>
+<div className="center-div bottom-space-sm">
+<input onChange={handleForm} className="black-border-sm theGoodShading" class="centered sm-text" type="file" accept="image/*" id="backgroundImage" name="backgroundImage" placeholder="Image File" value={donateTemplate.backgroundImage} />
 </div>
 </div>
-<button onClick={showPreview} className="bottom-space top-space save-btn-templater green-gradient "><p className="sm-text ">Preview</p></button>
+<hr/>
+<p className="italic">Header Color</p><br/>
+<p className="bottom-space-xs">Current: </p> 
+<div style={{height:"35px",width:"55px",borderRadius:"7px", marginBottom:"20px"}} className={selectedColor.headerColor+" "+"center-div theGoodShading "}></div>
+ {/* <input class="centered" type="text" id="name" name="name" placeholder="img name"  /> */}
+ <div className="row"> 
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="peach-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="sm-text white">peach</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div onClick={handleForm} id="headerColor" value="aqua-gradient" className="aqua-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="white sm-text">aqua</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="indigo-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor"  className="white sm-text">indigo</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="magenta-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" m className="white sm-text">magenta</p></div>
+
+</div>
+</div>
+ <div className="row">     
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className=" forest-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="white sm-text">forest</p></div>
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className=" periwinkle-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" myco className="white sm-text">periwinkle</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="chrome-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="white sm-text">chrome</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="cloud-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="black sm-text">white</p></div>
+</div>
+</div>
+{/* Footer */}
+<hr/>
+<p className="italic">Footer Color</p><br/>
+<p className="bottom-space-xs">Current: </p> 
+<div style={{height:"35px",width:"55px",borderRadius:"7px", marginBottom:"20px"}} className={selectedColor.footerColor+" "+"center-div theGoodShading "}></div>
+<div className="row"> 
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="peach-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="sm-text white">peach</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="aqua-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">aqua</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="indigo-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">indigo</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="magenta-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">magenta</p></div>
+
+</div>
+</div>
+ <div className="row">     
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className=" forest-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">forest</p></div>
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className=" periwinkle-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">periwinkle</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="chrome-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="white sm-text">chrome</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="cloud-gradient theGoodShading color-swatch"><p onClick={handleForm} id="footerColor" className="black sm-text">white</p></div>
+</div>
+</div>
+{/* Card Color */}
+<hr/>
+<p className="italic">Card Main Color</p><br/>
+<p className="bottom-space-xs">Current: </p> 
+<div style={{height:"35px",width:"55px",borderRadius:"7px", marginBottom:"20px"}} className={selectedColor.cardColor+" "+"center-div theGoodShading "}></div>
+<div className="row"> 
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="peach-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" className="sm-text white">peach</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div onClick={handleForm} id="headerColor" value="aqua-gradient" className="aqua-gradient theGoodShading color-swatch"><p onClick={handleForm} id="headerColor" className="white sm-text">aqua</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="indigo-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor"  className="white sm-text">indigo</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="magenta-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" m className="white sm-text">magenta</p></div>
+
+</div>
+</div>
+ <div className="row">     
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className=" forest-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" className="white sm-text">forest</p></div>
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className=" periwinkle-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" myco className="white sm-text">periwinkle</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="chrome-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" className="white sm-text">chrome</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="cloud-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardColor" className="black sm-text">white</p></div>
+</div>
+</div>
+{/* Card Button Color */}
+<hr/>
+<p className="italic">Button Color</p><br/>
+<p className="bottom-space-xs">Current: </p> 
+<div style={{height:"35px",width:"55px",borderRadius:"7px", marginBottom:"20px"}} className={selectedColor.cardButtonColor+" "+"center-div theGoodShading "}></div>
+<div className="row"> 
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="peach-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" className="sm-text white">peach</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div onClick={handleForm} id="headerColor" value="aqua-gradient" className="aqua-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" className="white sm-text">aqua</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="indigo-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor"  className="white sm-text">indigo</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className="magenta-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" m className="white sm-text">magenta</p></div>
+
+</div>
+</div>
+ <div className="row">     
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className=" forest-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" className="white sm-text">forest</p></div>
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div  className=" periwinkle-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" myco className="white sm-text">periwinkle</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="chrome-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" className="white sm-text">chrome</p></div>
+
+</div>
+<div className="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 pointer bottom-space-sm">
+<div className="cloud-gradient theGoodShading color-swatch"><p onClick={handleForm} id="cardButtonColor" className="black sm-text">white</p></div>
+</div>
+</div>
+{/*  */}
+</div>
+
+</div>
+<hr/><hr/>
+<button onClick={showPreview} className="bottom-space top-space save-btn-templater magenta-gradient  "><p className="sm-text ">Preview</p></button>
   </form>
   
 </div>
@@ -175,7 +420,12 @@ handleForm={handleForm}
 <Header
          orgName={donateTemplate.orgName}
          logo={donateTemplate.logo}
-         subheading={""}
+         subheading={donateTemplate.headerText}
+         nav1Text={navObj.public.nav1Text}
+         nav1={navObj.public.nav1}
+         nav2Text={navObj.public.nav2}
+         nav2={navObj.public.nav2Text}
+         headerColor={donateTemplate.headerColor}
         />
  <div className="row">
 {howManyArray.map((n,i)=>{ 
@@ -183,9 +433,11 @@ handleForm={handleForm}
 return (
     
 <Card
+cardColor={donateTemplate.cardColor}
+cardButtonColor={donateTemplate.cardButtonColor}
 title={ eval(`donateTemplate.card${i+1}Title`)}
 description={eval(`donateTemplate.card${i+1}Text`)}
-price={"$" +eval(`donateTemplate.card${i+1}Price`)}
+price={eval(`donateTemplate.card${i+1}Price`)}
 // style={eval(`donateTemplate.card${i+1}Price`) ==null && {style={display:"none"}} }
 // stripeInit /= {()=>stripeInit}
             />
@@ -200,19 +452,23 @@ price={"$" +eval(`donateTemplate.card${i+1}Price`)}
 <Footer
         footerText={donateTemplate.footerText}
         footerSubtext={donateTemplate.footerSubtext}
-
+        footerColor={donateTemplate.footerColor}
+        
         />
-        <div className="centered content-card-xl">
-        <p className="md-text">Do you want to finalize these edits?</p>
-<div classname="infoMessage">
-        <p className="md-text">Warning: Once you submit, changes will take effect on the live site. You can change them again at any time.<br/></p>
-</div>
-<button onClick={submitEdits} className="save-btn green-gradient" >Yes</button>
-</div>
+        
 </div>
 }
 {/* END PREVIEW */}
-<Footer />
+<div className="centered content-card-xl bottom-space infoMessage text-shadow theGoodShading indigo-border">
+        <p className="header-text indigo">{messageUi.confirm}</p>
+<div classname="infoMessage">
+        <p className="md-text magenta outfit-font">{messageUi.alert}<br/></p>
+</div>
+<button onClick={submitEdits} className="save-btn magenta-gradient" >Yes</button>
+</div>
+<Footer
+footerColor={"indigo-gradient"}
+ />
 </div>
 )
 }

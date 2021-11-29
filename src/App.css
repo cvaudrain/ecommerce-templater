@@ -3,7 +3,7 @@ body{
 }
 form {
   position: relative;
-  width: 55vw;
+  width: 70vw;
   /* height:50vh; */
   margin: auto auto 20px auto;
   /* background: #fff; */
@@ -16,7 +16,7 @@ form {
 }
 @media(max-width:576px){
     form{
-        width:75vw;
+        width:80vw;
     }
 }
 form input {
@@ -69,7 +69,7 @@ header{
 }
 footer{
   color:rgb(218, 218, 218);
-  background:#0ca073;
+  /* background:#0ca073; */
   /* font-family: 'Libre Baskerville', serif; */
  font-size:1rem;
  padding:30px;
@@ -81,6 +81,19 @@ footer{
 /*  */
 /* PROJECT-SPECIFIC */
 /*  */
+.br-logo-gray{
+  background:url("images/br-gray.png");
+  background-attachment: fixed;
+}
+.color-swatch{
+  /* height:20px;
+    width:20px; */
+    border-radius:7px;
+
+}
+.percent60{
+  max-width:60%;
+}
 .preview-border{
   border: 2px solid gray;
 }
@@ -187,7 +200,9 @@ font-style:italic;
   font-weight:bold;
 }
 /* COLORS */
-
+.transparent{
+  color:rgba(255, 255, 255, 0)
+}
 /* Colors. Backgrounds */
 .br-transparent{
   background:#ffffff00
@@ -210,7 +225,8 @@ font-style:italic;
 .black-gradient{
   background: linear-gradient(160deg, rgb(22, 22, 22) 30%, rgb(24, 24, 24) 50%, rgb(29, 29, 29)20%);
 }
-.br-gradient-aqua{
+.aqua-gradient{
+  color:white;
   background: linear-gradient(166deg, rgb(80, 151, 145) 37%, rgb(65, 139, 144) 60%, rgb(61, 135, 144) 71%);
 }
 .peach-gradient{
@@ -220,38 +236,52 @@ background: -webkit-gradient(linear, left top, right top, from(#f29263), to(#ee9
 background: linear-gradient(160deg, #ee905a 47%, #e0885c 60%,#d47b4e 70% );
 }
 .indigo-gradient{
+  color:white;
 background: -webkit-gradient(linear, left top, right top, from(#446682), to(#2d506b));
 background: rgb(68,102,130);
 background: linear-gradient(166deg, rgba(68,102,130,1) 37%, rgba(54,88,116,1) 60%, rgba(45,80,107,1) 71%);
 }
 .magenta-gradient{
+  color:white;
 background: rgb(223, 75, 127);
 background: linear-gradient(166deg, rgba(223,75,128,1) 10%, rgba(193,48,102,1) 41%, rgba(154,27,81,1) 77%);
 }
-.green-gradient{
+.forest-gradient{
   background: rgb(33,159,81);
 background: linear-gradient(157deg, rgba(33,159,81,1) 0%, rgba(27,154,82,1) 24%, rgba(6,222,114,1) 65%);
 }
 .periwinkle-gradient{
+  color:white;
 background: rgb(160,139,231);
 background: linear-gradient(176deg, rgba(160,139,231,1) 6%, rgba(142,119,227,1) 16%, rgba(123,99,198,1) 44%, rgba(112,91,177,1) 68%);
 }
-.steel-gradient{
+.chrome-gradient{
+  color:white;
 background: rgb(221,218,231);
 background: linear-gradient(162deg, rgb(192, 192, 194) 6%, rgba(135,134,138,1) 33%, rgba(95,94,98,1) 57%, rgba(106,103,103,1) 87%);
-color:#d47b4e;
-color:white;
-font-weight: bold;
-text-shadow: 1px 1px 2px black;
+
 }
 .cloud-gradient{
+  color:black;
 background: rgb(255,255,255);
 background: linear-gradient(150deg, rgba(255,255,255,1) 6%, rgba(226,226,226,1) 33%, rgba(218,218,218,1) 57%, rgba(205,205,205,1) 87%);
 }
+.white-gradient{
+  color:black;
+  background: rgb(255,255,255);
+  background: linear-gradient(150deg, rgba(255,255,255,1) 6%, rgba(226,226,226,1) 33%, rgba(218,218,218,1) 57%, rgba(205,205,205,1) 87%);
+  }
+  .br-white{
+    background: #fff;
+    color:black
+  }
 /*  */
 /* colors.element color */
 .steelblue-fade{
 background:#4b5566fa;
+}
+.indigo{
+  color: rgb(68,102,130)
 }
 .white{
   color:#fff
@@ -336,7 +366,10 @@ background:#4b5566fa;
   .rm-mg-row{
     margin: 0;
   }
-  
+  .square{
+    height:20px;
+    width:20px
+  }
   /* center-wrap is applied to a div that wraps elements you want centered. */
   .center-wrap{ 
     width:50%;
@@ -424,7 +457,7 @@ text-shadow: 0 0 1px black;
   height: 70px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  color: #fff;
+  /* color: #fff; */
   border:none;
   box-shadow: 1px 3px 9px black;
   text-shadow: 0 1px 1px black;
@@ -468,9 +501,22 @@ text-shadow: 0 0 1px black;
 /*  */
 /* UI Messages */
 /*  */
+.indigo-border{
+  border: 4px solid rgb(55, 82, 119) 
+}
+.white-border{
+  border:4px solid white
+}
+.black-border-sm{
+  border: 1px solid black
+}
+.magenta{
+  color: rgb(173, 53, 95);
+
+}
 .infoMessage{
   text-align:center;
-  background-color: #665c4bfa;
+  background-color: #ffffff;
   color:#fff;
   margin:15px auto;
   padding:8px;
@@ -512,6 +558,9 @@ text-shadow: 0 0 1px black;
 .soft-corners{
   border-radius:7px
 }
+.border-light{
+  border:2px solid rgb(233, 233, 233)
+}
 .content-card-sm{
   /* background: rgb(34, 34, 34); */
  color:white;
@@ -531,7 +580,7 @@ text-shadow: 0 0 1px black;
   border-radius: 7px;
   /* box-shadow: 0 2px 5px #ccc; */
   /* padding: 20px; */
-  min-width: 200px;
+  min-width: 250px;
   max-width:420px;
   width: 45vw;
   margin:30px auto 20px auto;
@@ -578,9 +627,9 @@ text-shadow: 0 0 1px black;
   overflow: hidden;
 }
 .content-card-xl{
-  background: #fff;
+  /* background: #fff; */
   border-radius: 7px;
-  box-shadow: 0 1px 7px rgb(138, 137, 137);
+  /* box-shadow: 0 1px 7px rgb(138, 137, 137); */
   /* padding: 10px; */
   width: 75vw;
   /* max-width: 450px; */

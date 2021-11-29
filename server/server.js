@@ -1,6 +1,8 @@
 require("dotenv").config()
 const express = require("express")
 const mongoose = require("mongoose")
+const multer = require("multer")
+const fs = require("fs")
 const app = express()
 const cors = require("cors")
 const path = require("path") //utility for formatting url path delivery
@@ -32,6 +34,7 @@ app.get("/",(req,res)=>{
     res.sendFile(path.join(__dirname,".././client/public","index.html"))
 })
 
+const db = mongoose.connection
 // MongoDB / Mongoose
 // import schemas.js
 const schemas = require("./schemas") 
@@ -66,8 +69,8 @@ app.post("/api/stripesession", async (req,res)=>{
        console.log("GET Req")
         console.log(req.body)
         console.log(req.body.price)
-    //     console.log(productArr)
-        let itemName = req.body.item // the item id no. to be compared against product array entries
+    //     console.log(productArr)     //|| handles if the card's title was just the price, without a name
+        let itemName = req.body.item || `$${req.body.price} Charitable Donation`// the item id no. to be compared against product array entries
         let itemPrice = req.body.price
         let itemPriceCents = itemPrice * 100
         console.log("Received GET req from client api")
@@ -77,8 +80,8 @@ app.post("/api/stripesession", async (req,res)=>{
                     mode:"payment",
                     success_url: "http://localhost:3000/success", //for LOCAL test server
                     // success_url: process.env.SERVER_ADDRESS+"/success",
-                    // cancel_url: "https://docs.google.com/forms/d/e/1FAIpQLSerhoPRuEFlo5XGAcH8hmnk4EkBJJ0fw15Hv8cM3DPs3zdx9A/viewform",
-                    cancel_url:process.env.SERVER_ADDRESS+"/",//INVALID URL ERROR
+                    cancel_url:"http://localhost:3000/", //for LOCAL test server
+                    // cancel_url:process.env.SERVER_ADDRESS+"/",//FOR BUILD,
                     line_items:[
                     {
                         price_data:{
@@ -103,81 +106,139 @@ app.post("/api/stripesession", async (req,res)=>{
               
     })
     const DonateTemplateSchema = schemas.DonateTemplate
-    // const DonateTemplateSchema = new mongoose.Schema(
-    //     {
-    //         templateName:String,
-    //         currentTemplate:Boolean,
-    //         orgName:String,
-    //         logo:Buffer,
-    //         headerText:String,
-    //         headlineText:String,
-    //         footerText:String,
-    //         footerSubtext:String,
-    //         card1Price:Number,
-    //         card2Price:Number,
-    //         card3Price:Number,
-    //         card4Price:Number,
-    //         card1Title:String,
-    //         card2Title:String,
-    //         card3Title:String,
-    //         card4Title:String,
-    //         card1Text:String,
-    //         card2Text:String,
-    //         card3Text:String,
-    //         card4Text:String
-    //         
-    // }
-    // )
-
     //Setting a template from Admin
     app.post("/api/editDonateTemplate",(req,res)=>{
         console.log(req.body)
         const updatedTemplate = req.body
-        res.json("Recieved at server. Thanks.")
+        console.log(fs.readFileSync(req.body.logo.path))
+        // res.json("Recieved at server. Thanks.")  //upsert option will insert if no match is found. I.e, replace match, or else add on it's own.
+        DonateTemplate.findOneAndReplace({currentTemplate:true},updatedTemplate,{upsert:true},(err,item)=>{
+            if(err){
+                console.log(err)
+                res.status(500)
+            }else{
+                console.log("Success")
+                res.json({
+                    message:"Successfully updated active template.",
+                    newTemplate:updatedTemplate
+                })
+            }
+        })
     })
     //DonateTemplate.findOneAndUpdate (err,item)=>  set item.isurrentTemplate to TRUE, set Previous treu to FALSE
 
     // Define MODEL before use as constructor function
     const DonateTemplate = mongoose.connection.model("DonateTemplate",DonateTemplateSchema)
-
+    const fallbackTemplate = schemas.startTemplate
     app.get("/api/loadDonateTemplate",(req,res)=>{
         console.log("ping")
+        // console.log(fs.readFileSync(req.file.path))
           DonateTemplate.findOne({currentTemplate:true},(err,doc)=>{
               if(err){
                   console.log(err)
-                  res.json("error")
-              } else if
-                (!doc){ res.json("not found")
+                  res.status(500)
+              } else if(!doc){ 
+                console.log("Not found?")
+                console.log(fallbackTemplate)
+                  res.json(fallbackTemplate)
               } else{
+                  console.log(doc)
                   res.json(doc)
               }
           })
-           
-           
           
-            // res.json(result)
-       
-      
-
-        // DonateTemplate.find({currentTemplate:true},(err,item)=>{
-        //     if(err){
-        //         console.log(err)
-        //         res.status(500)
-              
-        //     } else if(!item){
-        //         console.log("item not found")
-        //        res.json("item not found")
-        //     } else{
-        //         console.log("Matched: responding to client with found model")
-        //         console.log(item)
-        //         res.json(item)
-                
-        //     }
-        // })
 
     })
 
-    // function fillDB(){
+    // From MULTER Tutorial
+//  Define Multer Storage
+const storage = multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,"uploads")
+    },
+    filename:function(req,file,cb){
+        cb(null,file.fieldname + "-" + Date.now())
+    }
+})
+
+//var upload = multer({storage:storage}) //no security measures/filters
+//  With security filter
+var upload = multer({
+    storage:storage,
+    limits: {
+        fileSize:1500000 //limit 1.5MB
+    },
+    fileFilter(req,file,cb){
+        if(!file.originalname.match(/\.(png|jpg|pdf)$/)){ //filter out non-images with every Multer call
+            return cb(new Error("Please upload an image."))
+        }
+        cb(undefined,true)
+    }
+   }) 
+
+    // img upload  
+const ImageSchema = schemas.ImageSchema
+    let ImageModel = db.model("ImageModel",ImageSchema)     
+app.post("/api/uploadimage",upload.single("imageFile"),(req,res)=>{
+    console.log(req.body)
+    var image = fs.readFileSync(req.file.path);
+    var encode_image = image.toString('base64')
+    
+    var savedImage = {
+        // name:req.body.name,
+        contentType:req.file.mimetype,
+        image:{
+            data:fs.readFileSync(path.join(__dirname + '/../uploads/' + req.file.filename)),
+            contentType: "image"
+        }
+    }
+   ImageModel.create(savedImage,(err,item)=>{
+       if(err){
+           console.log(err)
+           res.status(500)
+       } else{
+        console.log("save img complete")
+           res.redirect("/admin-editor")
+       }
+   })
+    // if(!image){ //handle error
+    //     const error = new Error("Please choose files for upload")
+    //     error.httpStatusCode = 400
+    //     return next(error)
+    // } //if no error then..
+    // res.json("Image saved successfully")
+})
+
+
+ 
+app.get("/",(req,res)=>{
+    ImageModel.find({}, (err, items) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('An error occurred', err);
+        }
+        else {
+            console.log("success")
+            // res.send(items)
+            // res.render(".././client/views/imageviewer",{ items: items });
+            res.render(".././client/views/index",{ items: items });
+        }
+    });
+    // console.log("Connected")
+    //  res.sendFile(path.join(__dirname + "/../client/page2.html"))
+    
+    //  res.json(`Client connected to server`)
+ })
+        // Nuke DB
+        // DonateTemplate.deleteMany({},(err,doc)=>{
+        //     if(err){
+        //         console.log(err)
+        //     }
+        // })
+       
+
+
+        // function fillDB(){
     //     // let DonateTemplate = schemas.DonateTemplate()
     //     let template = (
     //         {

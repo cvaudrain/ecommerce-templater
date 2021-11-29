@@ -28,6 +28,22 @@ function handleInfo(ev){
     }
   })
 }
+// Change to a parent-inherited prop value...
+const navObj = {
+  admin:{
+nav1:"/admin",
+nav1Text:"Admin-Home",
+      nav2:"/",
+      nav2Text:"Homepage"
+  },
+  public: {
+    nav1:"/join",
+    nav1Text:"Join",
+      nav2:"",
+      nav2Text:""
+  }
+}
+
 function resetInfo(ev){
   console.log(ev)
   setInfo({
@@ -43,6 +59,10 @@ logo={"images/logo.png"}
 orgName={"QVRR Admin Portal"} 
 subheading={`Hello, ${user.name}.`}
 adminView={true}
+nav1Text={navObj.admin.nav1Text}
+nav1={navObj.admin.nav1}
+nav2Text={navObj.admin.nav2Text}
+nav2={navObj.admin.nav2}
 />
 <div className="md-text pad-sm outfit-font centered ">
   <p>What would you like to do?</p>

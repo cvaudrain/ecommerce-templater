@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+
 const DonateTemplate = new mongoose.Schema(
     {
         templateName:String,
@@ -10,6 +11,8 @@ const DonateTemplate = new mongoose.Schema(
     },
         headerColor: String,
         footerColor:String,
+        cardColor:String,
+        cardButtonColor:String,
         backgroundImage:{
             data: Buffer, //used for storing binary data like image files}
             contentType: String
@@ -49,6 +52,13 @@ const DonateTemplate = new mongoose.Schema(
         howMany: Number //determines the length of the array used as reference to map cards in JSX render
 }
 )
+const ImageSchema = new mongoose.Schema({
+    contentType:String,
+        image: {
+            data: Buffer, //used for storing binary data like image files}
+            contentType: String
+        }
+})
  const JoinTemplate = new mongoose.Schema(
      {
          templateName:String,
@@ -82,10 +92,57 @@ const DonateTemplate = new mongoose.Schema(
     email:String,
     password:String
  })
+ let startTemplate ={
+    howMany:0,
+    currentTemplate:true,
+    card1Price:null,
+        card2Price:0,
+        card3Price:0,
+        card4Price:0,
+        card1Title:"",
+        card2Title:"",
+        card3Title:"",
+        card4Title:"",
+        card1Text:"",
+        card2Text:"",
+        card3Text:"",
+        card4Text:"",
+        card5Price:0,
+        card6Price:0,
+        card7Price:0,
+        card8Price:0,
+        card5Title:"",
+        card6Title:"",
+        card7Title:"",
+        card8Title:"",
+        card1Text:"",
+        card2Text:"",
+        card3Text:"",
+        card4Text:"",
+        card5Text:"",
+        card6Text:"",
+        card7Text:"",
+        card8Text:"",
+        headerColor:"",
+        footerColor:"",
+        cardColor:"",
+        cardButtonColor:"",
+        backgroundImage:"",
+        
+        
+
+}
 const schemas = {
 DonateTemplate:DonateTemplate,
 JoinTemplate:JoinTemplate,
 Admin:Admin,
-AdminApplication:AdminApplication
+AdminApplication:AdminApplication,
+startTemplate:startTemplate,
+ImageSchema:ImageSchema
 }
+
+
+//NOT a schema- just a template
+
+
 module.exports = schemas

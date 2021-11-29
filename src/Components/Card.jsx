@@ -30,13 +30,13 @@ const navigate = useNavigate()
 
           </div>
           <div className="cloud-gradient">
-          <div className="magenta-gradient">
-          <p className="header-text glowtext">{props.title}</p>
-          <p className="header-text glowtext">{props.price}</p>
+          <div className={props.cardColor}>
+          <p className="header-text glowtext text-shadow">{props.title}</p>
+          <p className="header-text glowtext text-shadow">${props.price}</p>
           </div>
              
               <p className="md-text black">{props.description}</p>
-              <button id={props.price} onClick={stripeInit} className="save-btn br-gradient-aqua pointer" >Donate</button>
+              <button id={props.price} onClick={stripeInit} className={props.cardButtonColor + " " + "save-btn pointer" }>Donate</button>
           </div>
           
          
