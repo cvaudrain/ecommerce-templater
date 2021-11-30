@@ -23,7 +23,8 @@ app.use(express.urlencoded({ extended: true })); //unpack urlEncoded payload
 
 //if running node start from root as start ./server/server.js
 app.use(express.static(path.join( __dirname, ".././client/public"))) //!!IMPORTANT!! path,join() here if launching from ROOT with node/nodemon ./server/server.js
-
+app.use(express.static(path.join(__dirname,".././uploads"))) //to use multer directory
+app.use(express.static(__dirname))
 // Port- LISTEN! ~Navi
 app.listen(PORT,()=>{
     console.log("Server started on port " + PORT)
@@ -38,6 +39,7 @@ const db = mongoose.connection
 // MongoDB / Mongoose
 // import schemas.js
 const schemas = require("./schemas") 
+const { useDebugValue } = require("react")
 // console.log(schemas.DonateTemplate)
 //Establish DB Connection
 
@@ -150,20 +152,29 @@ app.post("/api/stripesession", async (req,res)=>{
 
     })
 
-    // From MULTER Tutorial
+    // From MULTER Tutorial, with changes 
 //  Define Multer Storage
+// unify the date.now value-
+const uniqueString = Date.now().toString(); //with vanilla POST from form, that date.now value is somehow saved to the 
+// req.file.path value, matching the storage value. To adjust this, we capture that date.now() on file load, so that it 
+//will be the same path for storage as we see in the savedImage.image.data value.
+
+console.log(uniqueString)
+
 const storage = multer.diskStorage({
     destination:function(req,file,cb){
-        cb(null,"uploads")
+        cb(null,'uploads')
     },
+    // destination:"/../uploads/",
     filename:function(req,file,cb){
-        cb(null,file.fieldname + "-" + Date.now())
+        cb(null,file.fieldname + "-" + uniqueString) 
     }
 })
 
-//var upload = multer({storage:storage}) //no security measures/filters
+// var upload = multer({storage:storage}) //no security measures/filters
 //  With security filter
-var upload = multer({
+//const upload = multer() //technically all you need to upload to default temp file location on disk, with random name for file
+const upload = multer({
     storage:storage,
     limits: {
         fileSize:1500000 //limit 1.5MB
@@ -175,30 +186,36 @@ var upload = multer({
         cb(undefined,true)
     }
    }) 
+app.use((error,req,res,next)=>{
+    const message=`This is the Unexpected field: ${error.field}`
+    console.log(message)
+    return res.status(500).send(message)
+})
 
     // img upload  
 const ImageSchema = schemas.ImageSchema
-    let ImageModel = db.model("ImageModel",ImageSchema)     
-app.post("/api/uploadimage",upload.single("imageFile"),(req,res)=>{
-    console.log(req.body)
-    var image = fs.readFileSync(req.file.path);
-    var encode_image = image.toString('base64')
-    
+    let ImageModel = db.model("ImageModel",ImageSchema)  
+                        // Server
+app.post("/api/uploadimage",upload.single("logo"),(req,res,next)=>{ //logo matches name of incoming input file
+        console.log(req.body) //DO NOT SEND a fieldname- upload.single creates it for you?
+        console.log(req.file)
+        
     var savedImage = {
-        // name:req.body.name,
-        contentType:req.file.mimetype,
+        name:req.body.name,
+        contentType:req.body.mimetype,
         image:{
-            data:fs.readFileSync(path.join(__dirname + '/../uploads/' + req.file.filename)),
+            data:fs.readFileSync(path.join(__dirname + '/../uploads/' + req.file.filename)), 
             contentType: "image"
         }
     }
+    console.log(savedImage)
    ImageModel.create(savedImage,(err,item)=>{
        if(err){
            console.log(err)
            res.status(500)
        } else{
         console.log("save img complete")
-           res.redirect("/admin-editor")
+           res.json("successfully uploaded image")
        }
    })
     // if(!image){ //handle error
