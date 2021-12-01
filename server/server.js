@@ -170,7 +170,6 @@ const storage = multer.diskStorage({
         cb(null,file.fieldname + "-" + uniqueString) 
     }
 })
-
 // var upload = multer({storage:storage}) //no security measures/filters
 //  With security filter
 //const upload = multer() //technically all you need to upload to default temp file location on disk, with random name for file
@@ -186,12 +185,6 @@ const upload = multer({
         cb(undefined,true)
     }
    }) 
-app.use((error,req,res,next)=>{
-    const message=`This is the Unexpected field: ${error.field}`
-    console.log(message)
-    return res.status(500).send(message)
-})
-
     // img upload  
 const ImageSchema = schemas.ImageSchema
     let ImageModel = db.model("ImageModel",ImageSchema)  
@@ -199,7 +192,7 @@ const ImageSchema = schemas.ImageSchema
 app.post("/api/uploadimagelogo",upload.single("logo"),(req,res,next)=>{ //logo matches name of incoming input file
         // console.log(req.body) 
         // console.log(req.file)
-    var savedImage = {
+    let savedImage = {
         name:req.body.name,
         contentType:req.body.mimetype,
         image:{
@@ -209,7 +202,7 @@ app.post("/api/uploadimagelogo",upload.single("logo"),(req,res,next)=>{ //logo m
     }
     //Add imgSrc key value after so you can reference the image.data for conversion ('this') doesn't work tha tway
     savedImage.imgSrc = savedImage.image.data.toString(`base64`) //IMPORTANT convert data to base64 now, to reference as img src attribute in JSX client side
-    // console.log(savedImage)
+    // console.log(savedImage) //FUN FACT: logging an entire buffer WILL slow performance bc this is synchronous.;
    ImageModel.create(savedImage,(err,item)=>{
        if(err){
            console.log(err)
@@ -225,32 +218,10 @@ app.post("/api/uploadimagelogo",upload.single("logo"),(req,res,next)=>{ //logo m
    })
 })
 
-
-
-//  name:headerLogo or name:backgroundImage
-app.get("/api/fetchImage",(req,res)=>{
-    ImageModel.find({}, (err, items) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('An error occurred', err);
-        }
-        else {
-            console.log("success")
-            // res.send(items)
-            // res.render(".././client/views/imageviewer",{ items: items });
-            res.render(".././client/views/index",{ items: items });
-        }
-    });
-    // console.log("Connected")
-    //  res.sendFile(path.join(__dirname + "/../client/page2.html"))
-    
-    //  res.json(`Client connected to server`)
- })
-
  app.post("/api/uploadimagebackground",upload.single("background"),(req,res,next)=>{ //logo matches name of incoming input file
     console.log(req.body) //DO NOT SEND a fieldname- upload.single creates it for you?
     console.log(req.file)
-var savedImage = {
+let savedImage = {
     name:req.body.name,
     contentType:req.body.mimetype,
     image:{
@@ -258,14 +229,19 @@ var savedImage = {
         contentType: "image"
     }
 }
-console.log(savedImage)
+savedImage.imgSrc = savedImage.image.data.toString(`base64`)
+// console.log(savedImage)
 ImageModel.create(savedImage,(err,item)=>{
    if(err){
        console.log(err)
        res.status(500)
    } else{
     console.log("save img complete")
-       res.json("successfully uploaded image")
+    payload = {
+        serverMessage: "successfully uploaded image",
+        image : savedImage
+    }
+       res.json(payload)
    }
 })
 })
@@ -316,3 +292,24 @@ ImageModel.create(savedImage,(err,item)=>{
 
     // }
     // fillDB()
+
+    // multer fetch
+    //  name:headerLogo or name:backgroundImage
+// app.get("/api/fetchImage",(req,res)=>{
+//     ImageModel.find({}, (err, items) => {
+//         if (err) {
+//             console.log(err);
+//             res.status(500).send('An error occurred', err);
+//         }
+//         else {
+//             console.log("success")
+//             // res.send(items)
+//             // res.render(".././client/views/imageviewer",{ items: items });
+//             res.render(".././client/views/index",{ items: items });
+//         }
+//     });
+//     // console.log("Connected")
+//     //  res.sendFile(path.join(__dirname + "/../client/page2.html"))
+    
+//     //  res.json(`Client connected to server`)
+//  })

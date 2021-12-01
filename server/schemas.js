@@ -14,6 +14,15 @@ const DonateTemplate = new mongoose.Schema(
                 //used as img src attr- the product of the buffer converted to String from base64, 
             } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
         },
+        backgroundImage: {
+            contentType:String,
+            imgSrc:String,
+            data: {
+                data:Array,
+                contentType:String,
+                //used as img src attr- the product of the buffer converted to String from base64, 
+            } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
+        },
     //     logo:{
     //         data: Buffer, //used for storing binary data like image files}
     //         contentType: String
@@ -22,10 +31,6 @@ const DonateTemplate = new mongoose.Schema(
         footerColor:String,
         cardColor:String,
         cardButtonColor:String,
-        backgroundImage:{
-            data: Buffer, //used for storing binary data like image files}
-            contentType: String
-    },
         headerText:String,
         headlineText:String,
         footerText:String,

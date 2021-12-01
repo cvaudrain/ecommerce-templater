@@ -7,7 +7,7 @@ function Header(props) {
         <div className="padding-sm ">
       <div className="centered ">
         
-           <img className="logo-format-round padding-sm inset" src={props.logo}></img>
+           <img className="logo-format-round padding-sm inset" src={`data:image/${props.logoContentType};base64,${props.logoImgSrc}`}></img>
           {/* <div className="col-xl-2 col-lg-2 col-sm-12 col-xs-12">  </div> */}
            <p className="header-text outfit-font padding text-shadow bold">{props.orgName}</p>
            <p className="header-text italic padding-sm text-shadow ">{props.subheading}</p>

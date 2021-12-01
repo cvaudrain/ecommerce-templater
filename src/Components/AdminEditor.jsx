@@ -49,8 +49,15 @@ const [donateTemplate, setDonateTemplate] = useState({
         footerColor:"",
         cardColor:"",
         cardButtonColor:"",
-        backgroundImage:"", //needs format of contentType:req.file.mimetype, image:data:"", contentType:"image"
-        logo: {
+        backgroundImage:{
+            contentType:"",
+            imgSrc:"",
+            data:{
+                data:[], //img is stored as a buffer array
+                contentType:"Buffer"
+            } 
+        },
+            logo: {
             contentType:"",
             imgSrc:"",
             data:{
@@ -180,31 +187,30 @@ function submitEdits(ev){
     })
 }) 
 }
-const [file,setFile] = useState({})
-const [fileName,setFileName] = useState("")
-console.log(file)
-function handleImage(ev){
+const [file,setFile] = useState({})     //STATE VARIABLES
+const [fileName,setFileName] = useState("") //!IMPORTANT- see above about appending the file itself, and the name,relating to the multer upload "imagename" arg
+
+function handleImage(ev){       //HANDLE INPUT state, targeting file and tracking changes with this selector notation
     let selectedFile = ev.target.files[0]
     setFile(selectedFile)
     setFileName("logo")
     console.log(ev.target.id) //targets logo
 }
- function handleImageSubmit(ev){
-    let data = new FormData()
-// Client
+ function handleImageSubmit(ev){ // SUBMIT (and in this case, render on res from server with payload object)
+
+     // const config = { //not needed bc using FormData() constructor, but good format for axios requests in general. 
+//     headers: {
+//     "content-type": "multipart/form-data"
+//     } }
+let data = new FormData() //formats object and headers just like a vanilla POST request to the Express server
 data.append("name","logo")
 data.append("logo",file)
 console.log("FILE")
 console.log(file)
-// const config = { //not needed but good format for axios requests in general. 
-//     headers: {
-//         "content-type": "multipart/form-data"
-//     }
-// }
-axios.post("/api/uploadimagelogo",data)
+axios.post("/api/uploadimagelogo",data) //config would be 3rd arg passed in if used
 .then((res)=>{
-    console.log(res)
-    setDonateTemplate(prev=>{
+   
+    setDonateTemplate(prev=>{ //sets the state for the template, which will afterwards be sent to the DB to save when user confirms the appearance and submits
         return {
             ...prev,
             logo: {
@@ -222,8 +228,10 @@ axios.post("/api/uploadimagelogo",data)
 const [fileBr,setFileBr] = useState({})
 
 function handleBrImage(ev){
+    console.log("handler")
     let selectedFile = ev.target.files[0]
     setFileBr(selectedFile)
+    // setFileBrName("background")
     console.log(ev.target.id) //targets logo
 }
  function handleBrImageSubmit(ev){
@@ -236,16 +244,19 @@ console.log(fileBr)
 axios.post("/api/uploadimagebackground",data)
 .then((res)=>{
     console.log(res)
-// setDonateTemplate(prev=>{
-//     return {
-//         ...prev,
-//         logo: res.data.image //object containing contentType:"image" and {type:buffer, data:array}
-//     }
-// })
+    setDonateTemplate(prev=>{ //sets the state for the template, which will afterwards be sent to the DB to save when user confirms the appearance and submits
+        return {
+            ...prev,
+            backgroundImage: {
+            imgSrc:res.data.image.imgSrc,
+            data:res.data.image.image.data[0],
+            contentType:res.data.image.image.contentType
+            } //object containing contentType:"image" and {type:buffer, data:array}, received inside res.data as image. Thus, res.data.image.image.data
+        }
+    })
 })
 .catch((err)=>console.log(err))
 }
-const base64method = toString("base64")
 
 return(
     <div className="br-logo-gray">
@@ -270,7 +281,7 @@ headerColor={"indigo-gradient"}
     setFileName(event.target.value)}}/> */}
 </form>
 <div className="pad sm" id="logoViewer" name="logoViewer">
-    <img src={`data:image/${donateTemplate.logo.contentType};base64,${donateTemplate.logo.imgSrc }`} className="logo-format-round" id="renderedLogo" name="renderedLogo" ></img>
+    <img src={`data:image/${donateTemplate.logo.contentType};base64,${donateTemplate.logo.imgSrc }` || "images/logo.png"} className="logo-format-round" id="renderedLogo" name="renderedLogo" ></img>
 </div>
 <button className="save-btn magenta-gradient" onClick={handleImageSubmit}>send</button>
 </div>
@@ -278,9 +289,10 @@ headerColor={"indigo-gradient"}
 <form style={{marginTop:"0"}} className="br-white black theGoodShading" action="/api/uploadimagebackground" method="POST" enctype="multipart/form-data">
 <p classname="md-text">Background Image</p>
 <input onChange={handleBrImage} className="black-border-sm theGoodShading sm-text" id="background" name="background" type="file" accept="image/*" />
-{/* <input type="text" id="name" onChange={event=>{
-    setFileName(event.target.value)}}/> */}
 </form>
+<div className="pad sm" id="brViewer" name="brViewer">
+    <img src={`data:image/${donateTemplate.backgroundImage.contentType};base64,${donateTemplate.backgroundImage.imgSrc }` || "images/br-gray.png"} className="logo-format-round" id="renderedBr" name="renderedBr" ></img>
+</div>
 <button className="save-btn magenta-gradient" onClick={handleBrImageSubmit}>send</button>
 </div>
   <form className="br-white black theGoodShading" >
@@ -325,9 +337,9 @@ initPriceValue={eval(`donateTemplate.card${i+1}Price`)}
 
 
 <p className="italic">Background Image</p>
-<div className="center-div bottom-space-sm">
+{/* <div className="center-div bottom-space-sm">
 <input onChange={handleForm} className="black-border-sm theGoodShading" class="centered sm-text" type="file" accept="image/*" id="backgroundImage" name="backgroundImage" placeholder="Image File" value={donateTemplate.backgroundImage} />
-</div>
+</div> */}
 </div>
 <hr/>
 <p className="italic">Header Color</p><br/>
@@ -497,10 +509,11 @@ initPriceValue={eval(`donateTemplate.card${i+1}Price`)}
 {/* BEGIN PREVIEW */}
 {preview &&
 //if preview mode activated, show preview. Will not show if no cards are completed.
-<div id = "editorPreview" className="margin-all preview-border">
+<div style={{background:"url(" + `data:image/${donateTemplate.backgroundImage.contentType};base64,${donateTemplate.backgroundImage.imgSrc }` + ")"  } ||{url:"images/br-gray.png"} } id = "editorPreview" className="margin-all preview-border">
 <Header
          orgName={donateTemplate.orgName}
-         logo={donateTemplate.logo}
+         logoImgSrc={donateTemplate.logo.imgSrc}
+         logoContentType={donateTemplate.logo.contentType}
          subheading={donateTemplate.headerText}
          nav1Text={navObj.public.nav1Text}
          nav1={navObj.public.nav1}
