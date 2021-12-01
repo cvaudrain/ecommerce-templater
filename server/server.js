@@ -196,10 +196,9 @@ app.use((error,req,res,next)=>{
 const ImageSchema = schemas.ImageSchema
     let ImageModel = db.model("ImageModel",ImageSchema)  
                         // Server
-app.post("/api/uploadimage",upload.single("logo"),(req,res,next)=>{ //logo matches name of incoming input file
-        console.log(req.body) //DO NOT SEND a fieldname- upload.single creates it for you?
-        console.log(req.file)
-        
+app.post("/api/uploadimagelogo",upload.single("logo"),(req,res,next)=>{ //logo matches name of incoming input file
+        // console.log(req.body) 
+        // console.log(req.file)
     var savedImage = {
         name:req.body.name,
         contentType:req.body.mimetype,
@@ -208,27 +207,28 @@ app.post("/api/uploadimage",upload.single("logo"),(req,res,next)=>{ //logo match
             contentType: "image"
         }
     }
-    console.log(savedImage)
+    //Add imgSrc key value after so you can reference the image.data for conversion ('this') doesn't work tha tway
+    savedImage.imgSrc = savedImage.image.data.toString(`base64`) //IMPORTANT convert data to base64 now, to reference as img src attribute in JSX client side
+    // console.log(savedImage)
    ImageModel.create(savedImage,(err,item)=>{
        if(err){
            console.log(err)
            res.status(500)
        } else{
         console.log("save img complete")
-           res.json("successfully uploaded image")
+        payload = {
+            serverMessage: "successfully uploaded image",
+            image : savedImage
+        }
+           res.json(payload)
        }
    })
-    // if(!image){ //handle error
-    //     const error = new Error("Please choose files for upload")
-    //     error.httpStatusCode = 400
-    //     return next(error)
-    // } //if no error then..
-    // res.json("Image saved successfully")
 })
 
 
- 
-app.get("/",(req,res)=>{
+
+//  name:headerLogo or name:backgroundImage
+app.get("/api/fetchImage",(req,res)=>{
     ImageModel.find({}, (err, items) => {
         if (err) {
             console.log(err);
@@ -246,6 +246,29 @@ app.get("/",(req,res)=>{
     
     //  res.json(`Client connected to server`)
  })
+
+ app.post("/api/uploadimagebackground",upload.single("background"),(req,res,next)=>{ //logo matches name of incoming input file
+    console.log(req.body) //DO NOT SEND a fieldname- upload.single creates it for you?
+    console.log(req.file)
+var savedImage = {
+    name:req.body.name,
+    contentType:req.body.mimetype,
+    image:{
+        data:fs.readFileSync(path.join(__dirname + '/../uploads/' + req.file.filename)), 
+        contentType: "image"
+    }
+}
+console.log(savedImage)
+ImageModel.create(savedImage,(err,item)=>{
+   if(err){
+       console.log(err)
+       res.status(500)
+   } else{
+    console.log("save img complete")
+       res.json("successfully uploaded image")
+   }
+})
+})
         // Nuke DB
         // DonateTemplate.deleteMany({},(err,doc)=>{
         //     if(err){

@@ -50,7 +50,14 @@ const [donateTemplate, setDonateTemplate] = useState({
         cardColor:"",
         cardButtonColor:"",
         backgroundImage:"", //needs format of contentType:req.file.mimetype, image:data:"", contentType:"image"
-        logo:""
+        logo: {
+            contentType:"",
+            imgSrc:"",
+            data:{
+                data:[], //img is stored as a buffer array
+                contentType:"Buffer"
+            }
+        }
 
 })  
 //Statefuls
@@ -171,140 +178,74 @@ function submitEdits(ev){
             alert: "Hm, something went wrong. Let's try again. If the problem persists, check your network connection and contact support."
         }
     })
-}) //if server responds with res.sattus and not a res.json object
+}) 
 }
 const [file,setFile] = useState({})
 const [fileName,setFileName] = useState("")
 console.log(file)
 function handleImage(ev){
-    console.log("FILES")
-    // console.log(ev.target.elements.input.files)
-    // let name = ev.target.id
-    // let value = ev.target.files[0]
-    // console.log("PATH")
     let selectedFile = ev.target.files[0]
     setFile(selectedFile)
     setFileName("logo")
-    // console.log(ev.target.files[0].path )//targets 1st file image
     console.log(ev.target.id) //targets logo
-
-    // console.log(ev.target.files) //targets the file objects array
-    // setFile({
-    //     fieldname: selectedFile.id, //the id and name attr of the INPUT element with type=image
-    //     originalname: selectedFile.name, //NOT the name attr of the input, but the ev.target/files[0].name, which is the file name like pokemon.jpg etc
-    //     // encoding: '', //will set on server BASED ON ENCTYPE?
-    //     mimetype: selectedFile.type, //
-    //     // destination: 'uploads', //will be set on server
-    //     // filename: 'logo-1638214876626',
-    //     path: '', //needs to be set from formSubmit event, not input as target
-    //     size: selectedFile.size
-    // })
 }
-
-
-//Format of req.file on server:
-// 
-// {
-    // fieldname: 'logo',
-    // originalname: 'starters.jpg',
-    // encoding: '7bit',
-    // mimetype: 'image/jpeg',
-    // destination: 'uploads',
-    // filename: 'logo-1638214876626',
-    // path: 'uploads\\logo-1638214876626',
-    // size: 214439
-//   }
-/* So we need to reformat a couple file property names bc Multer uses vanilla attr values, but JSX names certain keys differently.
- The file in JSX has .name and .type, But the server will expect .fieldname and .mimetype for example */
-
  function handleImageSubmit(ev){
-    //  ev.preventDefault();
-    // console.log(file)
-    // console.log(fileName)
     let data = new FormData()
 // Client
 data.append("name","logo")
 data.append("logo",file)
-
 console.log("FILE")
 console.log(file)
-const config = {
-    headers: {
-        "content-type": "multipart/form-data"
-    }
-}
-axios.post("/api/uploadimage",data)
-.then((res)=>{console.log(res)})
-.catch((err)=>console.log(err))
-    // ev.preventDefault()
-}
-// function handleImageSubmit(ev){
-//     let formData = new FormData()
-// formData.append("file",file)
-// const config = {
+// const config = { //not needed but good format for axios requests in general. 
 //     headers: {
 //         "content-type": "multipart/form-data"
 //     }
 // }
-// // axios.post("/api/uploadimage",formData,config)
-//     ev.preventDefault()
-//     console.log("FILE")
-//     console.log(ev.target.elements.logo.name) 
-//     let inputName = ev.target.elements.logo.name
-//     console.log(inputName)
-//     // console.log(ev.target.elements.logo.header)
-//     console.log(ev.target.elements.logo.files) //returns FileList, an array of file objects
-//     console.log(ev.target.elements.logo.files[0]) //returns the file object itself, just like we captured in the onChange
-//    console.log(ev.target.elements.logo.value) //the path of the image
-// let selectedFile = ev.target.elements.logo.files[0]
+axios.post("/api/uploadimagelogo",data)
+.then((res)=>{
+    console.log(res)
+    setDonateTemplate(prev=>{
+        return {
+            ...prev,
+            logo: {
+            imgSrc:res.data.image.imgSrc,
+            data:res.data.image.image.data[0],
+            contentType:res.data.image.image.contentType
+            } //object containing contentType:"image" and {type:buffer, data:array}, received inside res.data as image. Thus, res.data.image.image.data
+        }
+    })
+})
+.catch((err)=>console.log(err))
+    // ev.preventDefault() not needed bc button is outside the form
+}
+// BR Image
+const [fileBr,setFileBr] = useState({})
 
-// let filePath = ev.target.elements.logo.value //the path, needed for payload
-// formData.append("fieldname",inputName)
-// formData.append("originalname",selectedFile.name)
-// formData.append("mimetype",selectedFile.type)
-// formData.append("size",selectedFile.size)
-// let formatFile = {
-//     fieldname: inputName, //the id and name attr of the INPUT element with type=image
-//     originalname: selectedFile.name, //NOT the name attr of the input, but the ev.target/files[0].name, which is the file name like pokemon.jpg etc
-//     // encoding: '', //will set on server BASED ON ENCTYPE?
-//     mimetype: selectedFile.type, //
-//     // destination: 'uploads', //will be set on server
-//     // filename: 'logo-1638214876626', //set on server
-//     // path:`uploads\\${inputName}` , //the path used by Multer is defined in the muilter storage object, made with the uploads fdirname + fieldname + date.now() for a long unique string
-//     //So, we'll match the format here.
-//     size: selectedFile.size
-// }
-// //    let fileWithPath = file //clone non state variable
-//     // file.path = ev.target.elements.logo.value //must get path from form event, not input handle event. NOW file contains path for multer 
-//     // file.encoding = ev.target
-//     console.log(formatFile)
-//     // return
-   
+function handleBrImage(ev){
+    let selectedFile = ev.target.files[0]
+    setFileBr(selectedFile)
+    console.log(ev.target.id) //targets logo
+}
+ function handleBrImageSubmit(ev){
+    let data = new FormData()
+// Client
+data.append("name","background")
+data.append("background",fileBr)
+console.log("FILE Background")
+console.log(fileBr)
+axios.post("/api/uploadimagebackground",data)
+.then((res)=>{
+    console.log(res)
+// setDonateTemplate(prev=>{
+//     return {
+//         ...prev,
+//         logo: res.data.image //object containing contentType:"image" and {type:buffer, data:array}
 //     }
-//     const formData = new FormData()
-    // let fileWithPath = file //clone non state variable
-    // file.path = ev.target.elements.logo.value //must get path from form event, not input handle event. NOW file contains path for multer 
-// console.log("File:")
-//     console.log(formatFile)
-    //     // formData.append("name","logo")
-//     formData.append("file",file,"logo")
-//     console.log(formData) //undefined? it isn't loggable that's just how it is.
-    // formData.append("name","logo")
-    // console.log(ev.target.files[0])
-    // console.log(ev.target.elements.logo.value) //the path of the image
- 
-    // const payload = {
-    //     image: {
-    //         da
-    //     }
-    // }
-    // formData.append("title",this.state.title)
-    // formData.append("file",this.state.file)    
-    // console.log(formData)
-    // axios.post("/api/uploadimage",formData,config)
-    
-    // axios.post("/api/uploadimage",formatFile)
-// }
+// })
+})
+.catch((err)=>console.log(err))
+}
+const base64method = toString("base64")
 
 return(
     <div className="br-logo-gray">
@@ -321,13 +262,27 @@ headerColor={"indigo-gradient"}
 />
 {/* Form (to input edits to template object / stateful object donateTemplate) */}
 <div className="md-text pad-sm outfit-font centered ">
-
-<form className="br-white black theGoodShading" action="/api/uploadimage" method="POST" enctype="multipart/form-data">
-<input onChange={handleImage} className="black-border-sm theGoodShading" id="logo" name="logo" type="file" accept="image/*" />
+<div className="content-card-xl br-white theGoodShading">
+<form style={{marginTop:"0"}} className="br-white black " action="/api/uploadimage" method="POST" enctype="multipart/form-data">
+<p classname="md-text">Logo</p>
+<input onChange={handleImage} className="black-border-sm theGoodShading sm-text" id="logo" name="logo" type="file" accept="image/*" />
 {/* <input type="text" id="name" onChange={event=>{
     setFileName(event.target.value)}}/> */}
 </form>
-<button onClick={handleImageSubmit}>send</button>
+<div className="pad sm" id="logoViewer" name="logoViewer">
+    <img src={`data:image/${donateTemplate.logo.contentType};base64,${donateTemplate.logo.imgSrc }`} className="logo-format-round" id="renderedLogo" name="renderedLogo" ></img>
+</div>
+<button className="save-btn magenta-gradient" onClick={handleImageSubmit}>send</button>
+</div>
+<div className="content-card-xl br-white theGoodShading">
+<form style={{marginTop:"0"}} className="br-white black theGoodShading" action="/api/uploadimagebackground" method="POST" enctype="multipart/form-data">
+<p classname="md-text">Background Image</p>
+<input onChange={handleBrImage} className="black-border-sm theGoodShading sm-text" id="background" name="background" type="file" accept="image/*" />
+{/* <input type="text" id="name" onChange={event=>{
+    setFileName(event.target.value)}}/> */}
+</form>
+<button className="save-btn magenta-gradient" onClick={handleBrImageSubmit}>send</button>
+</div>
   <form className="br-white black theGoodShading" >
   {/* Header Content */}
   <div className="container">
