@@ -88,15 +88,17 @@ useEffect(()=>{
         <div className="">
         <Header
          orgName={template.orgName}
-         logo={template.logo}
+         logoImgSrc={template.logo.imgSrc}
+         logoContentType={template.logo.contentType}
          subheading={template.headerText}
          nav1Text={navObj.public.nav1Text}
 nav1={navObj.public.nav1}
 nav2Text={navObj.public.nav2Text}
 nav2={navObj.public.nav2}
 headerColor={template.headerColor}
-        />
-        <div className=" snowflake-br pad-b-sm">
+        />          
+        {/* style attr sets background to dynamic backgroundImage src url depending on the state of the DB template as set by admins */}
+        <div className=" pad-b-sm" style={{background:"url(" + `data:image/${template.backgroundImage.contentType};base64,${template.backgroundImage.imgSrc }` + ")"  } ||{url:"images/br-gray.png"} }>
         <div className="container">
             <div className="row">
             {/* <Card /> contains col-breakpoint bootstrap classes*/}

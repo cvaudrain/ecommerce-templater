@@ -51,22 +51,41 @@ const [donateTemplate, setDonateTemplate] = useState({
         cardButtonColor:"",
         backgroundImage:{
             contentType:"",
-            imgSrc:"",
-            data:{
-                data:[], //img is stored as a buffer array
-                contentType:"Buffer"
-            } 
-        },
+            imgSrc:""
+            // data:{
+            //     data:[], //img is stored as a buffer array
+            //     contentType:"Buffer"
+            },
+    
             logo: {
             contentType:"",
-            imgSrc:"",
-            data:{
-                data:[], //img is stored as a buffer array
-                contentType:"Buffer"
+            imgSrc:""
+            // data:{
+            //     data:[], //img is stored as a buffer array
+            //     contentType:"Buffer"
+            // }
             }
+    
         }
-
-})  
+)  
+const [filestate,setFileState] = useState({
+    backgroundImage:{
+        contentType:"",
+        imgSrc:"",
+        data:{
+            data:[], //img is stored as a buffer array
+            contentType:"Buffer"
+        } 
+    },
+        logo: {
+        contentType:"",
+        imgSrc:"",
+        data:{
+            data:[], //img is stored as a buffer array
+            contentType:"Buffer"
+        }
+    }
+})
 //Statefuls
 const [cardNum,setCardNum] = useState(4)
 const [joinTemplate, setJoinTemplate] = useState({})
@@ -154,6 +173,7 @@ function showPreview(e){
         return
     } //no showPreview unless at least 1 card is completed
     setPreview(true)
+    console.log(donateTemplate)
 }
 // Submit via api to update DB
 function submitEdits(ev){
@@ -190,8 +210,8 @@ function submitEdits(ev){
 const [file,setFile] = useState({})     //STATE VARIABLES
 const [fileName,setFileName] = useState("") //!IMPORTANT- see above about appending the file itself, and the name,relating to the multer upload "imagename" arg
 
-function handleImage(ev){       //HANDLE INPUT state, targeting file and tracking changes with this selector notation
-    let selectedFile = ev.target.files[0]
+function handleImage(ev,fileValue){       //HANDLE INPUT state, targeting file and tracking changes with this selector notation
+    let selectedFile = ev.target.files[0] || donateTemplate.backgroundImage
     setFile(selectedFile)
     setFileName("logo")
     console.log(ev.target.id) //targets logo
@@ -210,13 +230,13 @@ console.log(file)
 axios.post("/api/uploadimagelogo",data) //config would be 3rd arg passed in if used
 .then((res)=>{
    
-    setDonateTemplate(prev=>{ //sets the state for the template, which will afterwards be sent to the DB to save when user confirms the appearance and submits
+    setDonateTemplate(prev=>{ //sets the state for the file state variables,, which will afterwards be sent to the DB to save when user confirms the appearance and submits
         return {
             ...prev,
             logo: {
             imgSrc:res.data.image.imgSrc,
-            data:res.data.image.image.data[0],
-            contentType:res.data.image.image.contentType
+            // data:res.data.image.image.data[0], //if images stored in uploads folder, mapped to different Mongo collection, we don't need to store the buffer again. We only need that source to pull it- it's already there.
+            contentType:res.data.image.image.contentType//the donateTemplate ONLY needs the contentType and source to fill in src attribute in JSX below
             } //object containing contentType:"image" and {type:buffer, data:array}, received inside res.data as image. Thus, res.data.image.image.data
         }
     })
@@ -249,7 +269,7 @@ axios.post("/api/uploadimagebackground",data)
             ...prev,
             backgroundImage: {
             imgSrc:res.data.image.imgSrc,
-            data:res.data.image.image.data[0],
+            // data:res.data.image.image.data[0],
             contentType:res.data.image.image.contentType
             } //object containing contentType:"image" and {type:buffer, data:array}, received inside res.data as image. Thus, res.data.image.image.data
         }

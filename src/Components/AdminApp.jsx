@@ -64,7 +64,7 @@ nav1={navObj.admin.nav1}
 nav2Text={navObj.admin.nav2Text}
 nav2={navObj.admin.nav2}
 />
-<div className="md-text pad-sm outfit-font centered ">
+<div className="md-text pad-sm outfit-font centered " >
   <p>What would you like to do?</p>
 </div>
 <div className="container ">

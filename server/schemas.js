@@ -7,21 +7,21 @@ const DonateTemplate = new mongoose.Schema(
         orgName:String,
         logo: {
             contentType:String,
-            imgSrc:String,
-            data: {
-                data:Array,
-                contentType:String,
-                //used as img src attr- the product of the buffer converted to String from base64, 
-            } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
+            imgSrc:String
+            // data: {
+            //     data:Array,
+            //     contentType:String,
+            //     //used as img src attr- the product of the buffer converted to String from base64, 
+            // } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
         },
         backgroundImage: {
             contentType:String,
             imgSrc:String,
-            data: {
-                data:Array,
-                contentType:String,
-                //used as img src attr- the product of the buffer converted to String from base64, 
-            } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
+            // data: {
+            //     data:Array,
+            //     contentType:String,
+            //     //used as img src attr- the product of the buffer converted to String from base64, 
+            // } //must convert base64 here not iunside tag like with EJS, because EJS is actually running logic on server, not client.
         },
     //     logo:{
     //         data: Buffer, //used for storing binary data like image files}
@@ -142,8 +142,14 @@ const ImageSchema = new mongoose.Schema({
         footerColor:"",
         cardColor:"",
         cardButtonColor:"",
-        backgroundImage:"",
-        
+        backgroundImage: {
+            imageSrc:"",
+            contentType:""
+        },
+        logo:{
+            imageSrc:"",
+            contentType:"image"
+        }        
         
 
 }

@@ -15,8 +15,8 @@ app.use(cors())
 // Remember to switch to your live secret key in production. !IMPORTANT
 const stripe = require("stripe")(process.env.SECRET_KEY_TEST);
 
-app.use(express.json());//unpack JSON formatted payload / send res.json(payload,(callbaback)=>{....})
-app.use(express.urlencoded({ extended: true })); //unpack urlEncoded payload 
+app.use(express.json({limit:"10mb"}));//unpack JSON formatted payload / send res.json(payload,(callbaback)=>{....})
+app.use(express.urlencoded({ extended: true , limit:"50mb"})); //unpack urlEncoded payload 
 
 // If running node start from sub directory: server
 // app.use(express.static( ".././client/public")) //NO path,join() here if launching from /server sub DIR. Only for GET req of index.html
@@ -112,7 +112,7 @@ app.post("/api/stripesession", async (req,res)=>{
     app.post("/api/editDonateTemplate",(req,res)=>{
         console.log(req.body)
         const updatedTemplate = req.body
-        console.log(fs.readFileSync(req.body.logo.path))
+       
         // res.json("Recieved at server. Thanks.")  //upsert option will insert if no match is found. I.e, replace match, or else add on it's own.
         DonateTemplate.findOneAndReplace({currentTemplate:true},updatedTemplate,{upsert:true},(err,item)=>{
             if(err){
@@ -176,7 +176,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage:storage,
     limits: {
-        fileSize:1500000 //limit 1.5MB
+        fileSize:4000000 //limit 4MB
     },
     fileFilter(req,file,cb){
         if(!file.originalname.match(/\.(png|jpg|pdf)$/)){ //filter out non-images with every Multer call
@@ -192,6 +192,7 @@ const ImageSchema = schemas.ImageSchema
 app.post("/api/uploadimagelogo",upload.single("logo"),(req,res,next)=>{ //logo matches name of incoming input file
         // console.log(req.body) 
         // console.log(req.file)
+        console.log("UPLOAD API CALLED")
     let savedImage = {
         name:req.body.name,
         contentType:req.body.mimetype,
