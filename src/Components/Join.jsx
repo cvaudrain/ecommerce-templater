@@ -54,14 +54,14 @@ function Join(props) {
   }
   return (
     <div className="br-logo pad-b-xl">
-        <Header
+        {/* <Header
          orgName={inheritedTemplate.orgName || "Loading"}
          logo={inheritedTemplate.logo || "Loading"}
          nav1Text={navObj.public.nav1Text}
 nav1={navObj.public.nav1}
 nav2Text={navObj.public.nav2Text}
 nav2={navObj.public.nav2}
-        />
+        /> */}
         <div className=" pad-b-xl">
        
            <form className="app-form container pad-b br-white">

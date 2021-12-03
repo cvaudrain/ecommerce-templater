@@ -2,6 +2,7 @@ import Header from "./Header"
 import Footer from "./Footer"
 import Join from "./Join"
 import Card from "./Card"
+import CustomCard from "./CustomCard"
 import {useContext, useState,useEffect} from "react"
 import { Switch, Route, Link, Redirect,useLocation,Outlet, useHistory } from "react-router-dom";
 // Middleware
@@ -51,6 +52,12 @@ nav1Text:"Admin-Home",
         nav2Text:""
     }
 }
+// useEffect(()=>{
+//     setTemplate(props.globalTemplate)
+// },[])
+useEffect(()=>{
+    console.log("template parent changed, reload")
+},[template])
 
 useEffect(()=>{
     axios.get("/api/loadDonateTemplate").then((res)=>{
@@ -61,16 +68,16 @@ useEffect(()=>{
 },[])
     
    
-    useEffect(()=>{ //raise Donate Page template state to parent <App /> on state update
-        props.raiseTemplateState(template)
+    // useEffect(()=>{ //raise Donate Page template state to parent <App /> on state update
+    //     props.raiseTemplateState(template)
       
 
 // This for loop will set an array to whatever length equals the number of howMany selected,
 //thereby allowing us to use an expression of map() function to render correct amount, since we cannot use 
 //a for loop inside JSX
 
-    },[template])
-
+    // },[template])
+// 
     let howManyArray = []
     for(var i=0;i<template.howMany;i++){
         howManyArray.push({
@@ -86,7 +93,7 @@ useEffect(()=>{
 
     return(
         <div className="">
-        <Header
+        {/* <Header //header is rendered from App parent component
          orgName={template.orgName}
          logoImgSrc={template.logo.imgSrc}
          logoContentType={template.logo.contentType}
@@ -96,9 +103,9 @@ nav1={navObj.public.nav1}
 nav2Text={navObj.public.nav2Text}
 nav2={navObj.public.nav2}
 headerColor={template.headerColor}
-        />          
+        />           */}
         {/* style attr sets background to dynamic backgroundImage src url depending on the state of the DB template as set by admins */}
-        <div className=" pad-b-sm" style={{background:"url(" + `data:image/${template.backgroundImage.contentType};base64,${template.backgroundImage.imgSrc }` + ")"  } ||{url:"images/br-gray.png"} }>
+        <div className=" pad-b-sm br-lock-scroll" style={{background:"url(" + `data:image/${template.backgroundImage.contentType};base64,${template.backgroundImage.imgSrc }` + ")" } }>
         <div className="container">
             <div className="row">
             {/* <Card /> contains col-breakpoint bootstrap classes*/}
@@ -116,6 +123,19 @@ cardButtonColor={template.cardButtonColor}
 
 })
 }
+<div>
+{template.allowCustomCard ==="true" ? <CustomCard
+cardColor={template.cardColor}
+cardButtonColor={template.cardButtonColor}
+title={"Custom Amount"}
+// price={props.enteredAmount}
+// price={eval(`donateTemplate.card${i+1}Price`)}
+// style={eval(`donateTemplate.card${i+1}Price`) ==null && {style={display:"none"}} }
+// stripeInit /= {()=>stripeInit}
+            />
+:
+null }
+</div>
             {/* <Card
             // title={template.card1Title} use for a STORE- for donations, amt is sufficient
             title={template.card1Title}
@@ -149,11 +169,11 @@ cardButtonColor={template.cardButtonColor}
             
         </div>
         </div>
-        <Footer
+        {/* <Footer
         footerText={template.footerText}
         footerSubtext={template.footerSubtext}
         footerColor={template.footerColor}
-        />
+        /> */}
         </div>
     )
 }

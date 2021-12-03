@@ -9,9 +9,9 @@ import { Switch, Route, Link, Redirect,useLocation,Outlet, useHistory } from "re
     
     return(
         <div>
-        <Header
+        {/* <Header
         //  orgName={template.orgName}
-        />
+        /> */}
         <main>
         <Outlet/>
         </main>

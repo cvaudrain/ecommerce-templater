@@ -1,3 +1,4 @@
+
 import {useContext, useState,useEffect} from "react"
 import { Switch, Route, Link, Redirect,useLocation,Outlet, useHistory } from "react-router-dom";
 import Header from "./Header"
@@ -7,6 +8,9 @@ import Footer from "./Footer"
 import axios from "axios"
 
 export default function AdminApp(props){
+
+
+
 const user = {
   name:"Chris",
   id:1,
@@ -53,9 +57,10 @@ function resetInfo(ev){
   })
 }
 return(
-    <div className="cloud-gradient" onClick={resetInfo} >
-<Header
-logo={"images/logo.png"}
+    <div className="br-logo-gray" onClick={resetInfo} >
+{/* <Header
+logoImgSrc={defaultTemplate.logo.imgSrc}
+logoContentType={defaultTemplate.logo.contentType}
 orgName={"QVRR Admin Portal"} 
 subheading={`Hello, ${user.name}.`}
 adminView={true}
@@ -63,7 +68,7 @@ nav1Text={navObj.admin.nav1Text}
 nav1={navObj.admin.nav1}
 nav2Text={navObj.admin.nav2Text}
 nav2={navObj.admin.nav2}
-/>
+/> */}
 <div className="md-text pad-sm outfit-font centered " >
   <p>What would you like to do?</p>
 </div>
@@ -80,7 +85,7 @@ null
   <div name="1"  className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 content-card theGoodShading padding-sm black-gradient">
   <i onMouseOver={handleInfo} onMouseOut={resetInfo} id="memberAppViewer"  class="far padding-sm fa-question-circle white "></i>
   <p className="md-text">View Member Applications </p>
-  <a href="/admin-view-apps"><button className="pill green-gradient theGoodShading padding-sm">View</button></a>
+  <a href="/admin-view-apps"><button className="pill forest-gradient theGoodShading padding-sm">View</button></a>
   </div>
   {info.editor===true ?
 <div  className="content-card  black fixed align-r padding-sm br-translucent help ab-r">
@@ -92,7 +97,7 @@ null
   <div name="2"  className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 content-card theGoodShading padding-sm black-gradient">
   <i onMouseOver={handleInfo} onMouseOut={resetInfo} id="editor"  class="far padding-sm fa-question-circle white "></i>
   <p className="md-text">Edit Fundraiser Page Content</p>
-  <a href="/admin-editor"><button className="pill green-gradient theGoodShading padding-sm">Edit</button> </a>
+  <a href="/admin-editor"><button className="pill forest-gradient theGoodShading padding-sm">Edit</button> </a>
   </div>
 </div>
 <div className="row top-space">
@@ -106,7 +111,7 @@ null
   <div name="3" className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 content-card theGoodShading padding-sm black-gradient">
   <i onMouseOver={handleInfo} onMouseOut={resetInfo} id="adminAppViewer"  class="far padding-sm fa-question-circle white "></i>
   <p className="md-text">View Admin Applications </p>
-  <a href="/admin-approval"> <button className="pill green-gradient theGoodShading padding-sm">View</button></a>
+  <a href="/admin-approval"> <button className="pill forest-gradient theGoodShading padding-sm">View</button></a>
   </div>
   </div>
 </div>

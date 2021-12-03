@@ -5,11 +5,11 @@ export default function DonateSuccess(props){
     const [inheritedTemplate,setInheritedTemplate] = useState(props.inheritedTemplate)
     return(
         <div className="cloud-gradient">
-        <Header
+        {/* <Header
          orgName={inheritedTemplate.orgName || "Loading"}
          logo={inheritedTemplate.logo || "Loading"}
          subheading={props.subheading}
-        />
+        /> */}
         <div className=" pad-b-sm">
         <div className="content-card peach-gradient theGoodShading">
             <h2 className="">Success!</h2>

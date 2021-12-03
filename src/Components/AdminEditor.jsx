@@ -4,6 +4,7 @@ import Header from "./Header"
 import Footer from "./Footer"
 import AdminCardForm from "./AdminCardForm";
 import Card from "./Card"
+import CustomCard from "./CustomCard";
 // Middleware
 import axios from "axios"
 
@@ -17,6 +18,7 @@ const user = {
 const [donateTemplate, setDonateTemplate] = useState({
     howMany:0,
     currentTemplate:true,
+    allowCustomCard:false,
     card1Price:null,
         card2Price:0,
         card3Price:0,
@@ -143,10 +145,26 @@ useEffect(()=>{
         cardColor:donateTemplate.cardColor,
     cardButtonColor:donateTemplate.cardButtonColor
     })
+    // props.getTemplateGlobal(donateTemplate)
 },[donateTemplate])
 
 // Functions, UI Events, Handlers
+function editCustomCardY(ev){
+    ev.preventDefault()
+    setDonateTemplate(prev=>{
+        return {...prev, allowCustomCard:"true"}
+    })
+    
+}
+function editCustomCardN(ev){
+    ev.preventDefault()
+    setDonateTemplate(prev=>{
+        return {...prev, allowCustomCard:"false"}
+    })
+  
+}
 function handleForm(ev){
+ 
     console.log(ev)
     let name = ev.target.id
     let value = ev.target.value
@@ -163,6 +181,7 @@ function handleForm(ev){
         }
     })
 console.log(donateTemplate)
+console.log(donateTemplate.allowCustomCard)
 }
 
 // Render Preview
@@ -280,7 +299,7 @@ axios.post("/api/uploadimagebackground",data)
 
 return(
     <div className="br-logo-gray">
-<Header
+{/* <Header
 logo={"images/logo.png"}
 orgName={"Edit Public Page Content"} 
 subheading={donateTemplate.subheading}
@@ -290,7 +309,7 @@ nav1={navObj.admin.nav1}
 nav2Text={navObj.admin.nav2Text}
 nav2={navObj.admin.nav2}
 headerColor={"indigo-gradient"}
-/>
+/> */}
 {/* Form (to input edits to template object / stateful object donateTemplate) */}
 <div className="md-text pad-sm outfit-font centered ">
 <div className="content-card-xl br-white theGoodShading">
@@ -300,6 +319,7 @@ headerColor={"indigo-gradient"}
 {/* <input type="text" id="name" onChange={event=>{
     setFileName(event.target.value)}}/> */}
 </form>
+
 <div className="pad sm" id="logoViewer" name="logoViewer">
     <img src={`data:image/${donateTemplate.logo.contentType};base64,${donateTemplate.logo.imgSrc }` || "images/logo.png"} className="logo-format-round" id="renderedLogo" name="renderedLogo" ></img>
 </div>
@@ -310,6 +330,7 @@ headerColor={"indigo-gradient"}
 <p classname="md-text">Background Image</p>
 <input onChange={handleBrImage} className="black-border-sm theGoodShading sm-text" id="background" name="background" type="file" accept="image/*" />
 </form>
+
 <div className="pad sm" id="brViewer" name="brViewer">
     <img src={`data:image/${donateTemplate.backgroundImage.contentType};base64,${donateTemplate.backgroundImage.imgSrc }` || "images/br-gray.png"} className="logo-format-round" id="renderedBr" name="renderedBr" ></img>
 </div>
@@ -323,8 +344,19 @@ headerColor={"indigo-gradient"}
 <input className="black-border-sm theGoodShading" onChange={handleForm} id="orgName" type="text" placeholder="Page Header" value={donateTemplate.orgName} />
     <input className="black-border-sm theGoodShading" onChange={handleForm} id="headerText" type="text" placeholder="Subheading" value={donateTemplate.headerText} />
     {/* <input className="black-border-sm theGoodShading" onChange={handleFormImage} id="logo" type="file" accepts="image/*" placeholder="Logo" value={donateTemplate.logo} /> */}
+    <p>How Many Cards for Your Page?</p>
     <input className="black-border-sm theGoodShading" onChange={handleForm} id="howMany" name="howMany" type="number" min="0" max="8" placeholder="Number of donation cards?" value={donateTemplate.howMany}/>
     {/* <label for="howManyArray">How many cards should appear?</label> */}
+    <p>Allow Custom Donation Amount?</p>
+       <div className="row">
+       <div className="col-7" value="true">
+        <button onClick={editCustomCardY}  className="save-btn-sm forest-gradient centered margin-all" name="allowCustomCard" id="allowCustomCard" value="true"><i class="fas fa-check" value="true"></i></button> <br></br>
+       </div>
+       <div className="col-2" value="false">
+        <button onClick={editCustomCardN}  className="save-btn-sm magenta-gradient centered margin-all" name="allowCustomCard" id="allowCustomCard" value="false"><i class="fas fa-times" value="false"></i></button> <br></br>
+        </div>
+     </div>
+    {/* <input className="black-border-sm theGoodShading" onChange={handleForm} id="howMany" name="howMany" type="" min="0" max="8" placeholder="Allow Custom Amount?" value={donateTemplate.allowCustomCard}/> */}
 </div>
 
 {/* Main Content */}
@@ -529,7 +561,7 @@ initPriceValue={eval(`donateTemplate.card${i+1}Price`)}
 {/* BEGIN PREVIEW */}
 {preview &&
 //if preview mode activated, show preview. Will not show if no cards are completed.
-<div style={{background:"url(" + `data:image/${donateTemplate.backgroundImage.contentType};base64,${donateTemplate.backgroundImage.imgSrc }` + ")"  } ||{url:"images/br-gray.png"} } id = "editorPreview" className="margin-all preview-border">
+<div style={{background:"url(" + `data:image/${donateTemplate.backgroundImage.contentType};base64,${donateTemplate.backgroundImage.imgSrc }` + ")", backgroundRepeat:"no-repeat",backgroundAttachment:"fixed",backgroundSize:"cover"  } ||{url:"images/br-gray.png", backgroundRepeat:"no-repeat",backgroundAttachment:"fixed",backgroundSize:"cover"} } id = "editorPreview" className="margin-all preview-border">
 <Header
          orgName={donateTemplate.orgName}
          logoImgSrc={donateTemplate.logo.imgSrc}
@@ -560,6 +592,20 @@ price={eval(`donateTemplate.card${i+1}Price`)}
 
 })
 }
+<div>
+{donateTemplate.allowCustomCard ==="true" ? <CustomCard
+cardColor={donateTemplate.cardColor}
+cardButtonColor={donateTemplate.cardButtonColor}
+title={"Custom Amount"}
+// price={props.enteredAmount}
+// price={eval(`donateTemplate.card${i+1}Price`)}
+// style={eval(`donateTemplate.card${i+1}Price`) ==null && {style={display:"none"}} }
+// stripeInit /= {()=>stripeInit}
+            />
+:
+null
+}
+</div>
 </div>
 
 
@@ -580,9 +626,9 @@ price={eval(`donateTemplate.card${i+1}Price`)}
 </div>
 <button onClick={submitEdits} className="save-btn magenta-gradient" >Yes</button>
 </div>
-<Footer
+{/* <Footer
 footerColor={"indigo-gradient"}
- />
+ /> */}
 </div>
 )
 }

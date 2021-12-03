@@ -66,6 +66,7 @@ header{
     /* font-family: 'Libre Baskerville', serif; */
     box-shadow: 1px 5px 16px black;
     padding:40px;
+    
 }
 footer{
   color:rgb(218, 218, 218);
@@ -81,9 +82,16 @@ footer{
 /*  */
 /* PROJECT-SPECIFIC */
 /*  */
+.header-style{
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+}
 .br-logo-gray{
   background:url("images/br-gray.png");
   background-attachment: fixed;
+}
+.br-lock-scroll{
+  background-attachment: fixed;
+  background-size: cover;
 }
 .color-swatch{
   /* height:20px;
@@ -123,6 +131,7 @@ footer{
   background: url("images/snowflake-br.png");
   background-repeat: no-repeat;
   background-attachment: fixed;
+ 
 }
 .br-logo{
   background: url("images/br-desktop-1.png");
@@ -167,7 +176,7 @@ text-shadow: 0 0 1px black;
   border-radius: 50%;
  /* margin:20px; */
 }
-/* Font */
+/* Font //////////////////////////////////////// */
 
 .header-text{
   font-size:2.7rem;
@@ -199,11 +208,16 @@ font-style:italic;
 .bold{
   font-weight:bold;
 }
-/* COLORS */
+.ul{
+    border-bottom: 1px solid gray;
+    margin-bottom:30px;
+}
+/* COLORS/////
+/////////////////////////////// */
 .transparent{
   color:rgba(255, 255, 255, 0)
 }
-/* Colors. Backgrounds */
+/* Colors. Backgrounds/////////////// */
 .br-transparent{
   background:#ffffff00
 }
@@ -276,7 +290,7 @@ background: linear-gradient(150deg, rgba(255,255,255,1) 6%, rgba(226,226,226,1) 
     color:black
   }
 /*  */
-/* colors.element color */
+/* colors.element color//////// */
 .steelblue-fade{
 background:#4b5566fa;
 }
@@ -293,7 +307,7 @@ background:#4b5566fa;
   color:#5eb9c0
 }
 /*  */
-/* Positioning reusables*/
+/* Positioning reusables////////////////////////////////////////*/
 .centered{
   text-align: center;
 }
@@ -402,7 +416,7 @@ background:#4b5566fa;
 }
 
 /*  */
-/* Button Libr */
+/* Button Libr ////////////////////////////////*/
 .inset{
   /* margin:15px; 
   padding:4px;
@@ -471,8 +485,8 @@ text-shadow: 0 0 1px black;
   margin:3px;
   border: none;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   /* background: -webkit-gradient(linear, left top, right top, from(#446682), to(#2d506b)); */
@@ -499,7 +513,7 @@ text-shadow: 0 0 1px black;
   border-radius: 50%;
 }
 /*  */
-/* UI Messages */
+/* UI Messages//////////////////////////////// */
 /*  */
 .indigo-border{
   border: 4px solid rgb(55, 82, 119) 
@@ -553,7 +567,7 @@ text-shadow: 0 0 1px black;
   border-radius:7px;
 }
 
-/* Cards/ Content Groupings */
+/* Cards/ Content Groupings /////////////////////////////*/
 
 .soft-corners{
   border-radius:7px
@@ -644,13 +658,42 @@ text-shadow: 0 0 1px black;
     width: 90vw;
   }
 }
-
-.ul{
-    border-bottom: 1px solid gray;
-    margin-bottom:30px;
+/* Arrow-style auth form///////// */
+.auth-header-text{
+  text-align: center;
+  font-size: 3.8rem;
+  /* padding:40px; */
+  padding-bottom:15px;
+  text-align:center;
 }
 
-/* Dynamic Content, Visibility Modifiers, Modals, Cover/ Uncover Animations */
+.auth-header{
+  margin-bottom: 50px;
+  text-align: center;
+  margin: auto -16px;
+}
+.auth-sub-heading{
+  text-align: center;
+  /* font-family: 'Karla', sans-serif; */
+  color: #274c6b;
+  /* color: #0b517a; */
+  text-align:center;
+  text-shadow: 1px 1px 1px gray;
+  /* font-weight: bold; */
+  
+}
+.auth-form{
+  height: auto;
+}
+.auth-login-field{
+  text-align: center;
+ padding: 7px 
+}
+
+
+
+
+/* Dynamic Content, Visibility Modifiers, Modals, Cover/ Uncover Animations ///////////////////////////////////*/
 .pointer{
   cursor: pointer
 }

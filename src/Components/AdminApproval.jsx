@@ -14,13 +14,13 @@ const user = {
 }
 
 return(
-    <div className="cloud-gradient" >
-<Header
+    <div className="br-logo-gray" >
+{/* <Header
 logo={"images/logo.png"}
 orgName={"QVRR Admin Requests"} 
 subheading={`Hello, ${user.name}.`}
 adminView={true}
-/>
+/> */}
 <div className="md-text pad-sm outfit-font centered ">
   <p>Active Requests</p>
 </div>

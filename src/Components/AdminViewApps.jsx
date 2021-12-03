@@ -14,7 +14,7 @@ const user = {
 }
 
 return(
-    <div className="cloud-gradient">
+    <div className="br-logo-gray" >
 <Header
 logo={"images/logo.png"}
 orgName={"QVRR Membership Applications"} 

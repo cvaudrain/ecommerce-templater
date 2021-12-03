@@ -144,7 +144,7 @@ app.post("/api/stripesession", async (req,res)=>{
                 console.log(fallbackTemplate)
                   res.json(fallbackTemplate)
               } else{
-                  console.log(doc)
+                //   console.log(doc)
                   res.json(doc)
               }
           })

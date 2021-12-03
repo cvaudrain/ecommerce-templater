@@ -4,6 +4,7 @@ const DonateTemplate = new mongoose.Schema(
     {
         templateName:String,
         currentTemplate:Boolean,
+        allowCustomcard:Boolean,
         orgName:String,
         logo: {
             contentType:String,
@@ -110,6 +111,7 @@ const ImageSchema = new mongoose.Schema({
  let startTemplate ={
     howMany:0,
     currentTemplate:true,
+    allowCustomCard:false,
     card1Price:null,
         card2Price:0,
         card3Price:0,
